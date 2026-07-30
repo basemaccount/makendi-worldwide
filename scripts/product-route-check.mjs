@@ -35,6 +35,11 @@ for (const product of catalogProducts) {
 
 await page.getByRole("button", { name: "TR" }).click();
 const lastProduct = catalogProducts.at(-1);
+await page.waitForFunction(
+  (expected) =>
+    document.querySelector("h1")?.textContent?.trim() === expected,
+  localized(lastProduct.name, "tr"),
+);
 assert.equal(
   (await page.locator("h1").innerText()).trim(),
   localized(lastProduct.name, "tr"),
