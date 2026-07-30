@@ -3,7 +3,15 @@ import AxeBuilder from "@axe-core/playwright";
 import { chromium } from "@playwright/test";
 
 const base = process.env.TEST_BASE_URL || "http://127.0.0.1:4173";
-const routes = ["/", "/products", "/network", "/company", "/archive", "/contact"];
+const routes = [
+  "/",
+  "/products",
+  "/products/coffee/freeze-dried-coffee",
+  "/network",
+  "/company",
+  "/archive",
+  "/contact",
+];
 const viewports = [
   { width: 1440, height: 1000, label: "desktop" },
   { width: 390, height: 844, label: "mobile" },

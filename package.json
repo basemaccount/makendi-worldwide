@@ -8,9 +8,11 @@
   },
   "scripts": {
     "dev": "vite --host 0.0.0.0",
+    "generate:sitemap": "node scripts/generate-sitemap.mjs",
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
     "test:content": "node scripts/content-check.mjs",
+    "test:products": "node scripts/product-route-check.mjs",
     "test:links": "node scripts/link-check.mjs",
     "test:a11y": "node scripts/accessibility-check.mjs",
     "test:interactions": "node scripts/interaction-check.mjs",
@@ -18,7 +20,7 @@
     "test:performance": "node scripts/performance-check.mjs",
     "test:bundle": "node -e \"const fs=require('fs');const files=fs.readdirSync('dist/assets');const js=files.filter(f=>f.endsWith('.js')).reduce((n,f)=>n+fs.statSync('dist/assets/'+f).size,0);const css=files.filter(f=>f.endsWith('.css')).reduce((n,f)=>n+fs.statSync('dist/assets/'+f).size,0);if(js>350000||css>90000)throw new Error('Bundle budget exceeded: '+js+' JS / '+css+' CSS');console.log('Bundle budgets passed:',js,'JS /',css,'CSS')\"",
     "test:production": "node scripts/production-smoke.mjs",
-    "test": "npm run test:content && npm run test:links"
+    "test": "npm run test:content && npm run test:products && npm run test:links"
   },
   "dependencies": {
     "lucide-react": "^1.28.0",

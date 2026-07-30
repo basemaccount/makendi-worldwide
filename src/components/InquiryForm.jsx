@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { ArrowUpRight, CheckCircle2, Mail, Phone } from "lucide-react";
 import { useSearchParams } from "../router.jsx";
 import {
+  catalogProducts,
   categories,
   companyContact,
   destinationCountries,
@@ -18,9 +19,12 @@ const copy = {
     email: "Work email",
     phone: "Phone (optional)",
     category: "Ingredient family",
+    product: "Specific format (optional)",
     destination: "Destination market",
     details: "Application, format, volume or documentation needs",
     selectCategory: "Select an ingredient family",
+    selectProduct: "Select a published format",
+    selectCategoryFirst: "Choose a family first",
     selectDestination: "Select a destination",
     consent:
       "I understand this form prepares an email inquiry and does not confirm availability, pricing or delivery.",
@@ -39,9 +43,12 @@ const copy = {
     email: "İş e-postası",
     phone: "Telefon (isteğe bağlı)",
     category: "Ürün ailesi",
+    product: "Belirli format (isteğe bağlı)",
     destination: "Hedef pazar",
     details: "Uygulama, format, hacim veya belge ihtiyaçları",
     selectCategory: "Bir ürün ailesi seçin",
+    selectProduct: "Yayınlanmış bir format seçin",
+    selectCategoryFirst: "Önce bir ürün ailesi seçin",
     selectDestination: "Bir destinasyon seçin",
     consent:
       "Bu formun bir e-posta talebi hazırladığını; uygunluk, fiyat veya teslimatı teyit etmediğini anlıyorum.",
@@ -57,16 +64,28 @@ export default function InquiryForm({ language = "en" }) {
   const text = copy[language];
   const [searchParams] = useSearchParams();
   const initialCategory = searchParams.get("category") || "";
+  const initialProduct = searchParams.get("product") || "";
   const initialDestination = searchParams.get("destination") || "";
+  const validInitialCategory = categories.some(
+    (category) => category.slug === initialCategory,
+  )
+    ? initialCategory
+    : "";
+  const validInitialProduct = catalogProducts.some(
+    (product) =>
+      product.categorySlug === validInitialCategory &&
+      product.slug === initialProduct,
+  )
+    ? initialProduct
+    : "";
   const [status, setStatus] = useState("");
   const [values, setValues] = useState({
     name: "",
     company: "",
     email: "",
     phone: "",
-    category: categories.some((category) => category.slug === initialCategory)
-      ? initialCategory
-      : "",
+    category: validInitialCategory,
+    product: validInitialProduct,
     destination: destinationCountries.some((country) => country.iso === initialDestination)
       ? initialDestination
       : "",
@@ -77,6 +96,25 @@ export default function InquiryForm({ language = "en" }) {
   const categoryName = useMemo(
     () => localized(categories.find((item) => item.slug === values.category)?.name, language),
     [language, values.category],
+  );
+  const availableProducts = useMemo(
+    () =>
+      catalogProducts.filter(
+        (product) => product.categorySlug === values.category,
+      ),
+    [values.category],
+  );
+  const productName = useMemo(
+    () =>
+      localized(
+        catalogProducts.find(
+          (product) =>
+            product.categorySlug === values.category &&
+            product.slug === values.product,
+        )?.name,
+        language,
+      ),
+    [language, values.category, values.product],
   );
   const destinationName = useMemo(
     () =>
@@ -89,7 +127,11 @@ export default function InquiryForm({ language = "en" }) {
 
   function update(event) {
     const { name, value, checked, type } = event.target;
-    setValues((current) => ({ ...current, [name]: type === "checkbox" ? checked : value }));
+    setValues((current) => ({
+      ...current,
+      [name]: type === "checkbox" ? checked : value,
+      ...(name === "category" ? { product: "" } : {}),
+    }));
     if (status) setStatus("");
   }
 
@@ -110,14 +152,15 @@ export default function InquiryForm({ language = "en" }) {
 
     const subject =
       language === "tr"
-        ? `Ürün talebi — ${categoryName} / ${destinationName}`
-        : `Ingredient inquiry — ${categoryName} / ${destinationName}`;
+        ? `Ürün talebi — ${productName || categoryName} / ${destinationName}`
+        : `Ingredient inquiry — ${productName || categoryName} / ${destinationName}`;
     const body = [
       `${text.name}: ${values.name}`,
       `${text.company}: ${values.company}`,
       `${text.email}: ${values.email}`,
       `${text.phone}: ${values.phone || "—"}`,
       `${text.category}: ${categoryName}`,
+      `${text.product}: ${productName || "—"}`,
       `${text.destination}: ${destinationName}`,
       "",
       `${text.details}:`,
@@ -195,6 +238,26 @@ export default function InquiryForm({ language = "en" }) {
               {categories.map((category) => (
                 <option value={category.slug} key={category.slug}>
                   {localized(category.name, language)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <span>{text.product}</span>
+            <select
+              name="product"
+              value={values.product}
+              onChange={update}
+              disabled={!values.category}
+            >
+              <option value="">
+                {values.category
+                  ? text.selectProduct
+                  : text.selectCategoryFirst}
+              </option>
+              {availableProducts.map((product) => (
+                <option value={product.slug} key={product.slug}>
+                  {localized(product.name, language)}
                 </option>
               ))}
             </select>

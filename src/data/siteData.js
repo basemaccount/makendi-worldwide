@@ -167,6 +167,34 @@ export const categories = [
   },
 ];
 
+export function slugifyProduct(value) {
+  return value
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/&/g, " and ")
+    .replace(/[—–]/g, " ")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+export const catalogProducts = categories.flatMap((category) =>
+  category.products.map(([en, tr], index) => ({
+    slug: slugifyProduct(en),
+    name: { en, tr },
+    categorySlug: category.slug,
+    categoryNumber: category.number,
+    position: index + 1,
+  })),
+);
+
+export function findCatalogProduct(categorySlug, productSlug) {
+  return catalogProducts.find(
+    (product) =>
+      product.categorySlug === categorySlug && product.slug === productSlug,
+  );
+}
+
 export const destinationCountries = [
   ["tr", "Türkiye", "Türkiye", "europe"],
   ["de", "Germany", "Almanya", "europe"],

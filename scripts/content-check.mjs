@@ -1,10 +1,13 @@
 import assert from "node:assert/strict";
 import { access } from "node:fs/promises";
 import {
+  catalogProducts,
   categories,
   companyContact,
   destinationCountries,
   documentedTouchpoints,
+  findCatalogProduct,
+  slugifyProduct,
 } from "../src/data/siteData.js";
 
 assert.equal(categories.length, 12, "The catalog must contain 12 ingredient families");
@@ -14,6 +17,16 @@ assert.equal(
   "The catalog must contain 60 published product formats",
 );
 assert.equal(new Set(categories.map((category) => category.slug)).size, categories.length);
+assert.equal(catalogProducts.length, 60, "Every published format needs a product profile");
+assert.equal(
+  new Set(
+    catalogProducts.map(
+      (product) => `${product.categorySlug}/${product.slug}`,
+    ),
+  ).size,
+  catalogProducts.length,
+  "Every product profile route must be unique",
+);
 
 for (const category of categories) {
   assert.match(category.slug, /^[a-z0-9-]+$/);
@@ -24,6 +37,19 @@ for (const category of categories) {
     assert.equal(product.length, 2, `${category.slug} product needs EN/TR labels`);
     assert.ok(product[0] && product[1]);
   }
+}
+
+for (const product of catalogProducts) {
+  assert.match(product.slug, /^[a-z0-9-]+$/);
+  assert.equal(product.slug, slugifyProduct(product.name.en));
+  assert.ok(product.name.en && product.name.tr);
+  assert.ok(
+    categories.some((category) => category.slug === product.categorySlug),
+  );
+  assert.equal(
+    findCatalogProduct(product.categorySlug, product.slug),
+    product,
+  );
 }
 
 assert.equal(destinationCountries.length, 28, "The destination desk must contain 28 countries");
@@ -54,5 +80,5 @@ for (const file of [
 }
 
 console.log(
-  `Content verified: ${categories.length} families, 60 formats, ${destinationCountries.length} flags, ${documentedTouchpoints.length} documented touchpoints and 3 archived PDFs.`,
+  `Content verified: ${categories.length} families, ${catalogProducts.length} product profiles, ${destinationCountries.length} flags, ${documentedTouchpoints.length} documented touchpoints and 3 archived PDFs.`,
 );

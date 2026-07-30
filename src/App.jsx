@@ -40,9 +40,11 @@ import ExperienceLayer from "./components/ExperienceLayer.jsx";
 import InquiryForm from "./components/InquiryForm.jsx";
 import WorldAtlas from "./components/WorldAtlas.jsx";
 import {
+  catalogProducts,
   categories,
   companyContact,
   destinationCountries,
+  findCatalogProduct,
   localized,
 } from "./data/siteData.js";
 
@@ -125,6 +127,32 @@ const copy = {
       notSpecsText:
         "Specifications vary by requested product and brief. Send the exact application instead of relying on a generic online data sheet.",
       related: "Continue exploring",
+    },
+    productProfile: {
+      eyebrow: "Published catalog format",
+      back: "Back to ingredient family",
+      family: "Ingredient family",
+      position: "Portfolio reference",
+      published: "Published catalog name",
+      intro:
+        "This format appears in Makendi’s public ingredient portfolio. Its exact grade, origin, packaging, documentation and commercial fit are confirmed against the buyer’s brief.",
+      briefEyebrow: "A useful starting point",
+      briefTitle: "Build the request around the real application.",
+      briefText:
+        "A specific product name is only the first step. Include the intended use, requested parameters, destination and documentation needs so the team can respond without assumptions.",
+      briefPoints: [
+        ["Application", "Describe the recipe, process or industrial use."],
+        ["Requirements", "Share the technical parameters and documents you need confirmed."],
+        ["Destination", "Identify the receiving market for routing and compliance context."],
+      ],
+      request: "Ask about this format",
+      archive: "Review source library",
+      boundaryEyebrow: "Accuracy boundary",
+      boundaryTitle: "Current confirmation comes before commitment.",
+      boundaryText:
+        "This profile confirms that the format is listed in Makendi’s published portfolio. It does not represent live stock, a fixed specification, certification, price, minimum order, lead time or delivery promise.",
+      related: "Related formats in this family",
+      relatedIntro: "Continue within the same ingredient family.",
     },
     solutions: {
       eyebrow: "Working model",
@@ -369,6 +397,32 @@ const copy = {
       notSpecsText:
         "Spesifikasyonlar talep edilen ürüne ve projeye göre değişir. Genel bir çevrim içi doküman yerine kesin uygulamayı bize iletin.",
       related: "Keşfetmeye devam edin",
+    },
+    productProfile: {
+      eyebrow: "Yayınlanmış katalog formatı",
+      back: "Ürün ailesine dön",
+      family: "Ürün ailesi",
+      position: "Portföy referansı",
+      published: "Yayınlanmış katalog adı",
+      intro:
+        "Bu format, Makendi’nin kamuya açık ürün portföyünde yer almaktadır. Kesin kalite sınıfı, menşe, ambalaj, belge gereksinimleri ve ticari uygunluk alıcının talebine göre teyit edilir.",
+      briefEyebrow: "Doğru başlangıç",
+      briefTitle: "Talebi gerçek uygulama etrafında oluşturun.",
+      briefText:
+        "Belirli bir ürün adı yalnızca ilk adımdır. Ekibin varsayımda bulunmadan yanıt verebilmesi için kullanım amacını, istenen parametreleri, destinasyonu ve belge ihtiyaçlarını paylaşın.",
+      briefPoints: [
+        ["Uygulama", "Reçeteyi, prosesi veya endüstriyel kullanım amacını açıklayın."],
+        ["Gereksinimler", "Teyit edilmesini istediğiniz teknik parametreleri ve belgeleri paylaşın."],
+        ["Destinasyon", "Rota ve mevzuat bağlamı için hedef pazarı belirtin."],
+      ],
+      request: "Bu format hakkında bilgi alın",
+      archive: "Kaynak kütüphanesini inceleyin",
+      boundaryEyebrow: "Doğruluk sınırı",
+      boundaryTitle: "Taahhütten önce güncel teyit gerekir.",
+      boundaryText:
+        "Bu profil, formatın Makendi’nin yayınlanmış portföyünde listelendiğini teyit eder. Canlı stok, sabit spesifikasyon, sertifika, fiyat, minimum sipariş, teslim süresi veya teslimat taahhüdü anlamına gelmez.",
+      related: "Bu ailedeki ilgili formatlar",
+      relatedIntro: "Aynı ürün ailesi içinde keşfetmeye devam edin.",
     },
     solutions: {
       eyebrow: "Çalışma modeli",
@@ -1056,6 +1110,9 @@ function ProductDetailPage({ language }) {
   const { slug } = useParams();
   const category = categories.find((item) => item.slug === slug);
   if (!category) return <Navigate to="/404" replace />;
+  const categoryProducts = catalogProducts.filter(
+    (product) => product.categorySlug === category.slug,
+  );
 
   const related = categories
     .filter((item) => item.slug !== category.slug)
@@ -1092,13 +1149,18 @@ function ProductDetailPage({ language }) {
           <div>
             <p className="eyebrow">{text.detail.formats}</p>
             <ol className="product-list">
-              {category.products.map(([en, tr], index) => (
-                <li className="reveal" key={en}>
+              {categoryProducts.map((product, index) => (
+                <li className="reveal" key={product.slug}>
                   <span>{String(index + 1).padStart(2, "0")}</span>
-                  <strong>{language === "tr" ? tr : en}</strong>
                   <Link
-                    to={`/contact?category=${category.slug}`}
-                    aria-label={`${text.products.discuss}: ${language === "tr" ? tr : en}`}
+                    className="product-list__name"
+                    to={`/products/${category.slug}/${product.slug}`}
+                  >
+                    <strong>{localized(product.name, language)}</strong>
+                  </Link>
+                  <Link
+                    to={`/products/${category.slug}/${product.slug}`}
+                    aria-label={`${text.common.view}: ${localized(product.name, language)}`}
                   >
                     <ArrowUpRight />
                   </Link>
@@ -1131,6 +1193,157 @@ function ProductDetailPage({ language }) {
               <CategoryCard category={item} language={language} key={item.slug} />
             ))}
           </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
+function ProductProfilePage({ language }) {
+  const text = copy[language];
+  const profileText = text.productProfile;
+  const { slug, productSlug } = useParams();
+  const category = categories.find((item) => item.slug === slug);
+  const product = findCatalogProduct(slug, productSlug);
+
+  if (!category || !product) return <Navigate to="/404" replace />;
+
+  const relatedProducts = catalogProducts
+    .filter(
+      (item) =>
+        item.categorySlug === category.slug && item.slug !== product.slug,
+    )
+    .slice(0, 4);
+  const Icon = categoryIcons[category.slug] || Sparkles;
+  const productCount = category.products.length;
+  const reference = `${category.number}.${String(product.position).padStart(2, "0")}`;
+  const inquiryUrl = `/contact?category=${category.slug}&product=${product.slug}`;
+
+  return (
+    <>
+      <section className={`format-hero format-hero--${category.accent}`}>
+        <div className="container">
+          <Link
+            className="back-link"
+            to={`/products/${category.slug}`}
+          >
+            <ArrowRight size={16} />
+            {profileText.back}
+          </Link>
+          <div className="format-hero__grid">
+            <div className="format-hero__copy">
+              <p className="eyebrow eyebrow--orange">
+                {profileText.eyebrow} · {reference}
+              </p>
+              <h1>{localized(product.name, language)}</h1>
+              <p className="lede">{profileText.intro}</p>
+              <div className="format-hero__actions">
+                <Link className="button button--orange" to={inquiryUrl}>
+                  {profileText.request}
+                  <ArrowUpRight size={18} />
+                </Link>
+                <Link className="button button--ghost-light" to="/archive">
+                  {profileText.archive}
+                  <FileText size={18} />
+                </Link>
+              </div>
+            </div>
+            <aside className="format-record" aria-label={profileText.position}>
+              <div className="format-record__top">
+                <span>{reference}</span>
+                <Icon aria-hidden="true" />
+              </div>
+              <dl>
+                <div>
+                  <dt>{profileText.family}</dt>
+                  <dd>{localized(category.name, language)}</dd>
+                </div>
+                <div>
+                  <dt>{profileText.position}</dt>
+                  <dd>
+                    {String(product.position).padStart(2, "0")} /{" "}
+                    {String(productCount).padStart(2, "0")}
+                  </dd>
+                </div>
+                <div>
+                  <dt>{profileText.published}</dt>
+                  <dd>{localized(product.name, language)}</dd>
+                </div>
+              </dl>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section className="section section--cream">
+        <div className="container format-brief-grid">
+          <article className="format-brief reveal">
+            <p className="eyebrow eyebrow--orange">
+              {profileText.briefEyebrow}
+            </p>
+            <h2>{profileText.briefTitle}</h2>
+            <p className="lede">{profileText.briefText}</p>
+            <div className="format-brief__steps">
+              {profileText.briefPoints.map(([title, body], index) => (
+                <div key={title}>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <div>
+                    <h3>{title}</h3>
+                    <p>{body}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </article>
+          <aside className="accuracy-card reveal">
+            <span className="accuracy-card__icon" aria-hidden="true">
+              <ClipboardCheck />
+            </span>
+            <p className="eyebrow">{profileText.boundaryEyebrow}</p>
+            <h2>{profileText.boundaryTitle}</h2>
+            <p>{profileText.boundaryText}</p>
+            <Link className="text-link" to={inquiryUrl}>
+              {profileText.request}
+              <ArrowRight size={18} />
+            </Link>
+          </aside>
+        </div>
+      </section>
+
+      <section className="section section--oat format-related">
+        <div className="container">
+          <SectionHeading
+            eyebrow={profileText.related}
+            title={localized(category.name, language)}
+            intro={profileText.relatedIntro}
+          />
+          {relatedProducts.length ? (
+            <div className="format-related__grid">
+              {relatedProducts.map((item) => (
+                <Link
+                  className="format-related__card reveal"
+                  to={`/products/${category.slug}/${item.slug}`}
+                  key={item.slug}
+                >
+                  <span>
+                    {category.number}.
+                    {String(item.position).padStart(2, "0")}
+                  </span>
+                  <h3>{localized(item.name, language)}</h3>
+                  <ArrowUpRight aria-hidden="true" />
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <Link
+              className="format-related__single reveal"
+              to={`/products/${category.slug}`}
+            >
+              <span>{localized(category.note, language)}</span>
+              <strong>{profileText.back}</strong>
+              <ArrowRight aria-hidden="true" />
+            </Link>
+          )}
         </div>
       </section>
     </>
@@ -1752,12 +1965,42 @@ function RouteMeta({ language }) {
         tr: ["Kaynak kütüphanesi ve tarihçe — Makendi Worldwide", "Resmî arşiv dokümanları, etkinlik tarihçesi ve seçilmiş şirket fotoğrafları."],
       },
     };
-    const routeKey = location.pathname.startsWith("/products/") ? "/products" : location.pathname;
-    const [title, description] =
-      routes[routeKey]?.[language] ||
-      (language === "tr"
-        ? ["Sayfa bulunamadı — Makendi Worldwide", "Aradığınız sayfa bulunamadı."]
-        : ["Page not found — Makendi Worldwide", "The requested page was not found."]);
+    const productPath = location.pathname.split("/").filter(Boolean);
+    const category =
+      productPath[0] === "products"
+        ? categories.find((item) => item.slug === productPath[1])
+        : undefined;
+    const product =
+      productPath.length === 3
+        ? findCatalogProduct(productPath[1], productPath[2])
+        : undefined;
+    let metadata;
+    if (product && category) {
+      metadata = [
+        `${localized(product.name, language)} — Makendi Worldwide`,
+        language === "tr"
+          ? `${localized(product.name, language)}, ${localized(category.name, language)} ailesinde yayınlanmış bir Makendi portföy formatıdır. Teknik ve ticari ayrıntılar talebe göre teyit edilir.`
+          : `${localized(product.name, language)} is a published Makendi portfolio format within ${localized(category.name, language)}. Technical and commercial details are confirmed per inquiry.`,
+      ];
+    } else if (category && productPath.length === 2) {
+      metadata = [
+        `${localized(category.name, language)} — Makendi Worldwide`,
+        localized(category.note, language),
+      ];
+    } else {
+      metadata =
+        routes[location.pathname]?.[language] ||
+        (language === "tr"
+          ? [
+              "Sayfa bulunamadı — Makendi Worldwide",
+              "Aradığınız sayfa bulunamadı.",
+            ]
+          : [
+              "Page not found — Makendi Worldwide",
+              "The requested page was not found.",
+            ]);
+    }
+    const [title, description] = metadata;
     document.title = title;
     document.documentElement.lang = language;
     const meta = document.querySelector('meta[name="description"]');
@@ -1807,6 +2050,10 @@ export default function App() {
           <Route path="/" element={<HomePage language={language} />} />
           <Route path="/products" element={<ProductsPage language={language} />} />
           <Route path="/products/:slug" element={<ProductDetailPage language={language} />} />
+          <Route
+            path="/products/:slug/:productSlug"
+            element={<ProductProfilePage language={language} />}
+          />
           <Route path="/solutions" element={<SolutionsPage language={language} />} />
           <Route path="/network" element={<NetworkPage language={language} />} />
           <Route path="/company" element={<CompanyPage language={language} />} />

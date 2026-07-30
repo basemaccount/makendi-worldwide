@@ -2,6 +2,14 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://makendi-worldwide.vercel.app/</loc></url>
   <url><loc>https://makendi-worldwide.vercel.app/products</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/solutions</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/network</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/company</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/quality</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/responsibility</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/archive</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/contact</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/privacy</loc></url>
   <url><loc>https://makendi-worldwide.vercel.app/products/starches</loc></url>
   <url><loc>https://makendi-worldwide.vercel.app/products/dairy</loc></url>
   <url><loc>https://makendi-worldwide.vercel.app/products/sweeteners</loc></url>
@@ -14,12 +22,64 @@
   <url><loc>https://makendi-worldwide.vercel.app/products/flours</loc></url>
   <url><loc>https://makendi-worldwide.vercel.app/products/coffee</loc></url>
   <url><loc>https://makendi-worldwide.vercel.app/products/creamers</loc></url>
-  <url><loc>https://makendi-worldwide.vercel.app/solutions</loc></url>
-  <url><loc>https://makendi-worldwide.vercel.app/network</loc></url>
-  <url><loc>https://makendi-worldwide.vercel.app/company</loc></url>
-  <url><loc>https://makendi-worldwide.vercel.app/quality</loc></url>
-  <url><loc>https://makendi-worldwide.vercel.app/responsibility</loc></url>
-  <url><loc>https://makendi-worldwide.vercel.app/archive</loc></url>
-  <url><loc>https://makendi-worldwide.vercel.app/contact</loc></url>
-  <url><loc>https://makendi-worldwide.vercel.app/privacy</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/starches/corn-starch</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/starches/potato-starch</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/starches/wheat-starch</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/starches/tapioca-starch</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/starches/rice-starch</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/starches/pea-starch</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/dairy/demineralized-whey-powder</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/dairy/whey-permeate</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/dairy/skimmed-milk-powder</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/dairy/full-cream-milk-powder</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/dairy/condensed-milk</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/dairy/evaporated-milk</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/dairy/cream-powder</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/dairy/butter</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/sweeteners/sugar</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/sweeteners/dextrose-anhydrous</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/sweeteners/dextrose-monohydrate</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/sweeteners/agave</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/sweeteners/high-fructose-syrup</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/sweeteners/glucose-syrup</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/sweeteners/glucose-powder</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/sweeteners/maltitol</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/sweeteners/maltodextrin</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/sweeteners/sorbitol-liquid</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/sweeteners/special-sugars</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/soy/defatted-soy-flour</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/soy/full-fat-soy-flour</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/soy/soya-lecithin</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/soy/textured-soy-protein</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/soy/soya-meat-and-mincemeat</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/oils-fats/industrial-margarine</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/oils-fats/vegetable-ghee</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/oils-fats/refined-coconut-oil</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/oils-fats/shortenings</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/oils-fats/cbr-cocoa-butter-replacer</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/oils-fats/cbs-cocoa-butter-substitute</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/oils-fats/cbe-cocoa-butter-equivalent</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/oils-fats/hydrogenated-palm-kernel-oil</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/gluten/vital-wheat-gluten</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/cocoa/cocoa-butter</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/cocoa/cocoa-liquor</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/cocoa/cocoa-powder</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/cocoa/couverture</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/gelatin/gelatin-powder</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/gelatin/gelatin-leaves</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/coconut/virgin-coconut-oil</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/coconut/desiccated-coconut</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/coconut/coconut-cream</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/flours/wheat-flour</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/flours/gluten-flour</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/flours/rice-flour</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/flours/corn-flour</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/flours/potato-flour</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/coffee/coffee-beans</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/coffee/ground-coffee</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/coffee/spray-dried-instant-coffee</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/coffee/agglomerated-coffee</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/coffee/freeze-dried-coffee</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/creamers/non-dairy-creamers</loc></url>
+  <url><loc>https://makendi-worldwide.vercel.app/products/creamers/foamer</loc></url>
 </urlset>

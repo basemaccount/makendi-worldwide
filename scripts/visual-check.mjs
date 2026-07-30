@@ -4,7 +4,14 @@ import { chromium } from "@playwright/test";
 
 const base = process.env.TEST_BASE_URL || "http://127.0.0.1:4173";
 const output = process.env.VISUAL_OUTPUT || "/tmp/makendi-visual";
-const routes = ["/", "/products", "/network", "/archive", "/contact"];
+const routes = [
+  "/",
+  "/products",
+  "/products/coffee/freeze-dried-coffee",
+  "/network",
+  "/archive",
+  "/contact",
+];
 const viewports = [
   { width: 1440, height: 1000, label: "desktop" },
   { width: 768, height: 1024, label: "tablet" },

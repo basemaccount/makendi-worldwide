@@ -7,6 +7,7 @@ const routes = [
   "/products",
   "/products/starches",
   "/products/coffee",
+  "/products/coffee/freeze-dried-coffee",
   "/solutions",
   "/network",
   "/company",

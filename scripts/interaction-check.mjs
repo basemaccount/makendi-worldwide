@@ -21,6 +21,20 @@ await desktop.waitForTimeout(100);
 assert.equal(await desktop.locator(".category-card").count(), 1);
 await desktop.locator(".category-card").click();
 assert.equal(new URL(desktop.url()).pathname, "/products/coffee");
+await desktop.getByRole("link", { name: "Freeze-dried Coffee", exact: true }).click();
+assert.equal(
+  new URL(desktop.url()).pathname,
+  "/products/coffee/freeze-dried-coffee",
+);
+await desktop.getByRole("link", { name: "Ask about this format", exact: true }).first().click();
+assert.equal(new URL(desktop.url()).pathname, "/contact");
+assert.equal(await desktop.locator('select[name="category"]').inputValue(), "coffee");
+assert.equal(
+  await desktop.locator('select[name="product"]').inputValue(),
+  "freeze-dried-coffee",
+);
+await desktop.goBack();
+await desktop.goBack();
 await desktop.goBack();
 await desktop.goBack();
 assert.equal(new URL(desktop.url()).pathname, "/");
