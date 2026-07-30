@@ -1,0 +1,34 @@
+{
+  "name": "makendi-worldwide",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "test:content": "node scripts/content-check.mjs",
+    "test:links": "node scripts/link-check.mjs",
+    "test:a11y": "node scripts/accessibility-check.mjs",
+    "test:interactions": "node scripts/interaction-check.mjs",
+    "test:visual": "node scripts/visual-check.mjs",
+    "test:performance": "node scripts/performance-check.mjs",
+    "test:bundle": "node -e \"const fs=require('fs');const files=fs.readdirSync('dist/assets');const js=files.filter(f=>f.endsWith('.js')).reduce((n,f)=>n+fs.statSync('dist/assets/'+f).size,0);const css=files.filter(f=>f.endsWith('.css')).reduce((n,f)=>n+fs.statSync('dist/assets/'+f).size,0);if(js>350000||css>90000)throw new Error('Bundle budget exceeded: '+js+' JS / '+css+' CSS');console.log('Bundle budgets passed:',js,'JS /',css,'CSS')\"",
+    "test:production": "node scripts/production-smoke.mjs",
+    "test": "npm run test:content && npm run test:links"
+  },
+  "dependencies": {
+    "lucide-react": "^1.28.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
+    "@playwright/test": "^1.62.0",
+    "@vitejs/plugin-react": "^6.0.5",
+    "vite": "^8.1.5"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Makendi Worldwide",
+  "short_name": "Makendi",
+  "description": "Food ingredients, clearly coordinated.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#071a35",
+  "theme_color": "#071a35",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
