@@ -23,6 +23,7 @@ const copy = {
     previous: "Previous image",
     next: "Next image",
     archive: "Archive image",
+    swipe: "Swipe to browse",
   },
   tr: {
     title: "Tarihî fotoğraf arşivi",
@@ -33,12 +34,14 @@ const copy = {
     previous: "Önceki görsel",
     next: "Sonraki görsel",
     archive: "Arşiv görseli",
+    swipe: "Gezinmek için kaydırın",
   },
 };
 
 export default function ArchiveGallery({ language = "en" }) {
   const text = copy[language];
   const dialogRef = useRef(null);
+  const touchStartRef = useRef(null);
   const [active, setActive] = useState(null);
 
   useEffect(() => {
@@ -50,6 +53,21 @@ export default function ArchiveGallery({ language = "en" }) {
 
   function move(direction) {
     setActive((current) => (current + direction + images.length) % images.length);
+  }
+
+  function beginSwipe(event) {
+    const touch = event.changedTouches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  }
+
+  function endSwipe(event) {
+    if (!touchStartRef.current) return;
+    const touch = event.changedTouches[0];
+    const deltaX = touch.clientX - touchStartRef.current.x;
+    const deltaY = touch.clientY - touchStartRef.current.y;
+    touchStartRef.current = null;
+    if (Math.abs(deltaX) < 52 || Math.abs(deltaX) < Math.abs(deltaY) * 1.25) return;
+    move(deltaX > 0 ? -1 : 1);
   }
 
   return (
@@ -90,14 +108,28 @@ export default function ArchiveGallery({ language = "en" }) {
         className="gallery-dialog"
         ref={dialogRef}
         onClose={() => setActive(null)}
+        onCancel={(event) => {
+          event.preventDefault();
+          setActive(null);
+        }}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) setActive(null);
+        }}
         aria-label={text.title}
       >
         {active !== null && (
-          <div className="gallery-dialog__inner">
+          <div
+            className="gallery-dialog__inner"
+            onTouchStart={beginSwipe}
+            onTouchEnd={endSwipe}
+          >
             <div className="gallery-dialog__top">
-              <span>
-                {String(active + 1).padStart(2, "0")} / {String(images.length).padStart(2, "0")}
-              </span>
+              <div>
+                <span aria-live="polite">
+                  {String(active + 1).padStart(2, "0")} / {String(images.length).padStart(2, "0")}
+                </span>
+                <small>{text.swipe}</small>
+              </div>
               <button type="button" onClick={() => setActive(null)} aria-label={text.close}>
                 <X />
               </button>
@@ -109,6 +141,7 @@ export default function ArchiveGallery({ language = "en" }) {
               }
               width="1200"
               height="900"
+              draggable="false"
             />
             <div className="gallery-dialog__controls">
               <button type="button" onClick={() => move(-1)} aria-label={text.previous}>

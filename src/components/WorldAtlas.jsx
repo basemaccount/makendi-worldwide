@@ -222,6 +222,14 @@ export default function WorldAtlas({ language = "en", compact = false }) {
                   {text.add}
                   <ArrowUpRight size={17} />
                 </Link>
+                <button
+                  type="button"
+                  className="destination-selection__clear"
+                  onClick={() => setSelectedIso("")}
+                >
+                  <X size={16} />
+                  {text.clear}
+                </button>
               </>
             ) : (
               <span aria-hidden="true">&nbsp;</span>

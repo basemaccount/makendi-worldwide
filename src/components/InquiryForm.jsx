@@ -137,6 +137,7 @@ export default function InquiryForm({ language = "en" }) {
 
   function submit(event) {
     event.preventDefault();
+    const form = event.currentTarget;
     if (
       !values.name.trim() ||
       !values.company.trim() ||
@@ -147,6 +148,20 @@ export default function InquiryForm({ language = "en" }) {
       !values.consent
     ) {
       setStatus("error");
+      window.setTimeout(() => {
+        const firstInvalid = [...form.elements].find((field) => {
+          if (!field.name) return false;
+          if (field.name === "consent") return !field.checked;
+          return field.required && !String(field.value).trim();
+        });
+        firstInvalid?.focus();
+        firstInvalid?.scrollIntoView({
+          block: "center",
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+            ? "auto"
+            : "smooth",
+        });
+      }, 0);
       return;
     }
 
@@ -192,11 +207,23 @@ export default function InquiryForm({ language = "en" }) {
         </div>
       </div>
 
-      <form className="inquiry-form reveal" onSubmit={submit} noValidate>
+      <form
+        className="inquiry-form reveal"
+        onSubmit={submit}
+        noValidate
+        aria-describedby={status === "error" ? "inquiry-form-error" : undefined}
+      >
         <div className="field-grid">
           <label>
             <span>{text.name} *</span>
-            <input name="name" autoComplete="name" value={values.name} onChange={update} required />
+            <input
+              name="name"
+              autoComplete="name"
+              value={values.name}
+              onChange={update}
+              aria-invalid={status === "error" && !values.name.trim()}
+              required
+            />
           </label>
           <label>
             <span>{text.company} *</span>
@@ -205,6 +232,7 @@ export default function InquiryForm({ language = "en" }) {
               autoComplete="organization"
               value={values.company}
               onChange={update}
+              aria-invalid={status === "error" && !values.company.trim()}
               required
             />
           </label>
@@ -217,6 +245,7 @@ export default function InquiryForm({ language = "en" }) {
               inputMode="email"
               value={values.email}
               onChange={update}
+              aria-invalid={status === "error" && !values.email.trim()}
               required
             />
           </label>
@@ -233,7 +262,13 @@ export default function InquiryForm({ language = "en" }) {
           </label>
           <label>
             <span>{text.category} *</span>
-            <select name="category" value={values.category} onChange={update} required>
+            <select
+              name="category"
+              value={values.category}
+              onChange={update}
+              aria-invalid={status === "error" && !values.category}
+              required
+            >
               <option value="">{text.selectCategory}</option>
               {categories.map((category) => (
                 <option value={category.slug} key={category.slug}>
@@ -264,7 +299,13 @@ export default function InquiryForm({ language = "en" }) {
           </label>
           <label>
             <span>{text.destination} *</span>
-            <select name="destination" value={values.destination} onChange={update} required>
+            <select
+              name="destination"
+              value={values.destination}
+              onChange={update}
+              aria-invalid={status === "error" && !values.destination}
+              required
+            >
               <option value="">{text.selectDestination}</option>
               {destinationCountries.map((country) => (
                 <option value={country.iso} key={country.iso}>
@@ -281,6 +322,7 @@ export default function InquiryForm({ language = "en" }) {
             rows="6"
             value={values.details}
             onChange={update}
+            aria-invalid={status === "error" && !values.details.trim()}
             required
           />
         </label>
@@ -290,6 +332,7 @@ export default function InquiryForm({ language = "en" }) {
             name="consent"
             checked={values.consent}
             onChange={update}
+            aria-invalid={status === "error" && !values.consent}
             required
           />
           <span aria-hidden="true">
@@ -298,7 +341,11 @@ export default function InquiryForm({ language = "en" }) {
           <p>{text.consent}</p>
         </label>
         {status === "error" && (
-          <p className="form-message form-message--error" role="alert">
+          <p
+            className="form-message form-message--error"
+            id="inquiry-form-error"
+            role="alert"
+          >
             {text.validation}
           </p>
         )}

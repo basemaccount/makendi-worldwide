@@ -17,6 +17,7 @@
     "test:a11y": "node scripts/accessibility-check.mjs",
     "test:interactions": "node scripts/interaction-check.mjs",
     "test:motion": "node scripts/motion-check.mjs",
+    "test:mobile": "node scripts/mobile-check.mjs",
     "test:visual": "node scripts/visual-check.mjs",
     "test:performance": "node scripts/performance-check.mjs",
     "test:bundle": "node -e \"const fs=require('fs');const files=fs.readdirSync('dist/assets');const js=files.filter(f=>f.endsWith('.js')).reduce((n,f)=>n+fs.statSync('dist/assets/'+f).size,0);const css=files.filter(f=>f.endsWith('.css')).reduce((n,f)=>n+fs.statSync('dist/assets/'+f).size,0);if(js>350000||css>90000)throw new Error('Bundle budget exceeded: '+js+' JS / '+css+' CSS');console.log('Bundle budgets passed:',js,'JS /',css,'CSS')\"",

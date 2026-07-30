@@ -24,7 +24,7 @@ import {
   Wheat,
   X,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Link,
   NavLink,
@@ -730,12 +730,19 @@ function Header({ language, setLanguage }) {
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const menuToggleRef = useRef(null);
+  const firstMobileLinkRef = useRef(null);
   const navigation = [
     ["/products", text.nav.products],
     ["/solutions", text.nav.solutions],
     ["/network", text.nav.network],
     ["/company", text.nav.company],
     ["/quality", text.nav.quality],
+  ];
+  const mobileNavigation = [
+    ...navigation,
+    ["/responsibility", text.responsibility.eyebrow],
+    ["/archive", text.archive.eyebrow],
   ];
 
   useEffect(() => {
@@ -745,6 +752,23 @@ function Header({ language, setLanguage }) {
   useEffect(() => {
     document.body.classList.toggle("menu-open", open);
     return () => document.body.classList.remove("menu-open");
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return undefined;
+
+    const focusTimer = window.setTimeout(() => firstMobileLinkRef.current?.focus(), 80);
+    const closeOnEscape = (event) => {
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      menuToggleRef.current?.focus();
+    };
+
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      window.clearTimeout(focusTimer);
+      window.removeEventListener("keydown", closeOnEscape);
+    };
   }, [open]);
 
   useEffect(() => {
@@ -791,6 +815,7 @@ function Header({ language, setLanguage }) {
           <button
             type="button"
             className="menu-toggle"
+            ref={menuToggleRef}
             onClick={() => setOpen((value) => !value)}
             aria-expanded={open}
             aria-controls="mobile-navigation"
@@ -809,12 +834,22 @@ function Header({ language, setLanguage }) {
         </div>
       </div>
 
-      <div className={`mobile-menu ${open ? "is-open" : ""}`} id="mobile-navigation">
+      <div
+        className={`mobile-menu ${open ? "is-open" : ""}`}
+        id="mobile-navigation"
+        aria-hidden={!open}
+        inert={!open}
+      >
         <div className="mobile-menu__inner">
           <p className="micro-label">Makendi Worldwide</p>
           <nav aria-label={language === "tr" ? "Mobil menü" : "Mobile menu"}>
-            {navigation.map(([to, label], index) => (
-              <NavLink to={to} key={to} style={{ "--menu-index": index }}>
+            {mobileNavigation.map(([to, label], index) => (
+              <NavLink
+                to={to}
+                key={to}
+                ref={index === 0 ? firstMobileLinkRef : undefined}
+                style={{ "--menu-index": index }}
+              >
                 <span>0{index + 1}</span>
                 {label}
                 <ChevronRight />
