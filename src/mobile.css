@@ -8,7 +8,7 @@
 @media (max-width: 720px) {
   :root {
     --mobile-edge: clamp(14px, 4.25vw, 18px);
-    --mobile-section: clamp(70px, 19vw, 94px);
+    --mobile-section: clamp(58px, 15vw, 76px);
     --mobile-radius: clamp(18px, 5.5vw, 24px);
     --container: calc(100% - (var(--mobile-edge) * 2));
     --header-height: calc(76px + env(safe-area-inset-top, 0px));
@@ -250,7 +250,7 @@
 
   .home-hero__copy h1 {
     margin-bottom: 22px;
-    font-size: clamp(3.65rem, 17vw, 5.35rem);
+    font-size: clamp(3.25rem, 15.2vw, 4.85rem);
     letter-spacing: -0.05em;
     line-height: 0.92;
   }
@@ -345,12 +345,47 @@
   }
 
   .network-feature__visual {
-    min-height: clamp(270px, 82vw, 340px);
+    min-height: 0;
+    display: grid;
+    gap: 10px;
+    padding: 16px;
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 0.14);
+    border-radius: var(--mobile-radius);
+    background:
+      radial-gradient(circle at 50% 35%, rgb(50 100 165 / 0.22), transparent 55%),
+      rgb(255 255 255 / 0.035);
+  }
+
+  .network-feature__visual > img {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 1.9 / 1;
+    object-fit: contain;
+    opacity: 0.72;
+  }
+
+  .flag-orbit {
+    position: relative;
+    inset: auto;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
   }
 
   .flag-orbit__item {
-    width: 44px;
-    height: 44px;
+    position: static;
+    width: 100%;
+    height: 48px;
+    border-radius: 12px;
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .flag-orbit__item img {
+    width: 30px;
+    height: 21px;
   }
 
   .quality-feature__badge {
@@ -375,7 +410,7 @@
   /* Shared interior heroes */
 
   .page-hero__inner {
-    padding-block: clamp(66px, 18vw, 88px);
+    padding-block: clamp(54px, 15vw, 72px);
   }
 
   .page-hero::after {
@@ -387,7 +422,7 @@
   .page-hero h1 {
     width: 100%;
     margin-bottom: 24px;
-    font-size: clamp(3.2rem, 15.3vw, 4.9rem);
+    font-size: clamp(2.85rem, 13.6vw, 4.35rem);
     line-height: 0.96;
     overflow-wrap: anywhere;
   }
@@ -668,13 +703,14 @@
 
   .destination-grid {
     max-height: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
     padding-right: 0;
     overflow: visible;
   }
 
   .destination-chip {
-    min-height: 60px;
+    min-height: 56px;
     grid-template-columns: 32px minmax(0, 1fr);
     gap: 9px;
     padding: 9px 10px;
@@ -728,7 +764,7 @@
   }
 
   .atlas-note {
-    min-height: 235px;
+    min-height: 205px;
     padding: 25px 22px;
   }
 
@@ -1021,6 +1057,12 @@
     overflow-wrap: anywhere;
   }
 
+  .office-card dd a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
   .legal-section {
     grid-template-columns: 32px minmax(0, 1fr);
     gap: 10px;
@@ -1119,22 +1161,9 @@
     font-size: 3.08rem;
   }
 
-  .destination-grid {
-    grid-template-columns: 1fr;
-  }
-
   .destination-chip {
-    grid-template-columns: 36px minmax(0, 1fr) 28px;
-  }
-
-  .destination-chip__check {
-    display: grid;
-  }
-}
-
-@media (min-width: 360px) and (max-width: 720px) {
-  .destination-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 32px minmax(0, 1fr);
+    padding-inline: 8px;
   }
 }
 

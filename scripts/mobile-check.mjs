@@ -110,6 +110,23 @@ for (const target of alwaysVisibleTargets) {
   );
 }
 
+const homeNetwork = await interactionPage.locator(".network-feature__visual").evaluate((element) => {
+  const rect = element.getBoundingClientRect();
+  const flags = [...element.querySelectorAll(".flag-orbit__item")].map((flag) => {
+    const flagRect = flag.getBoundingClientRect();
+    return { width: flagRect.width, height: flagRect.height };
+  });
+  return {
+    height: rect.height,
+    viewportWidth: innerWidth,
+    flagCount: flags.length,
+    compactFlags: flags.every(({ width, height }) => width >= 44 && height >= 44),
+  };
+});
+assert.ok(homeNetwork.height <= homeNetwork.viewportWidth, `Home network visual is too tall: ${JSON.stringify(homeNetwork)}`);
+assert.equal(homeNetwork.flagCount, 8, "Home network visual did not expose eight representative flags");
+assert.equal(homeNetwork.compactFlags, true, "Home network flag targets fell below the compact visual size");
+
 await interactionPage.locator(".menu-toggle").click();
 await interactionPage.waitForTimeout(450);
 assert.equal(await interactionPage.locator(".mobile-menu nav a").count(), 7);
@@ -140,6 +157,10 @@ assert.equal(
 );
 
 await interactionPage.goto(`${base}/network`, { waitUntil: "networkidle" });
+const destinationColumns = await interactionPage.locator(".destination-grid").evaluate((element) => (
+  getComputedStyle(element).gridTemplateColumns.split(" ").filter(Boolean).length
+));
+assert.equal(destinationColumns, 2, "The 320px destination directory did not retain its compact two-column layout");
 const atlasTargets = await interactionPage
   .locator(".atlas__pin, .filter-row button, .search-field")
   .evaluateAll((elements) =>
