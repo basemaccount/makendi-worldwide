@@ -163,8 +163,8 @@ await interactionPage.locator(".archive-tile").first().click();
 await interactionPage.waitForTimeout(400);
 const dialogLayout = await interactionPage.locator(".gallery-dialog").evaluate((dialog) => {
   const rect = dialog.getBoundingClientRect();
-  const targets = [...dialog.querySelectorAll("button")].map((button) => {
-    const buttonRect = button.getBoundingClientRect();
+  const targets = [...dialog.querySelectorAll("button, a")].map((target) => {
+    const buttonRect = target.getBoundingClientRect();
     return { width: buttonRect.width, height: buttonRect.height };
   });
   return {
@@ -205,6 +205,10 @@ assert.match(
   /^02 \//,
   "A left swipe did not advance the mobile gallery",
 );
+await interactionPage.getByRole("button", { name: "Zoom image" }).click();
+assert.ok(await interactionPage.locator(".gallery-dialog__canvas").evaluate((element) => element.classList.contains("is-zoomed")));
+assert.ok(await interactionPage.getByRole("link", { name: "Download image" }).getAttribute("href"));
+await interactionPage.getByRole("button", { name: "Reset image zoom" }).click();
 await interactionPage.getByRole("button", { name: "Close gallery" }).click();
 
 await interactionPage.goto(`${base}/contact`, { waitUntil: "networkidle" });

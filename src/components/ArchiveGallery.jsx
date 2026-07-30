@@ -1,5 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Expand, X } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Download,
+  Expand,
+  X,
+  ZoomIn,
+  ZoomOut,
+} from "lucide-react";
 
 const images = [
   ["gallery-cocoa-pallet", "Cocoa powder pallets"],
@@ -24,6 +32,9 @@ const copy = {
     next: "Next image",
     archive: "Archive image",
     swipe: "Swipe to browse",
+    zoom: "Zoom image",
+    resetZoom: "Reset image zoom",
+    download: "Download image",
   },
   tr: {
     title: "Tarihî fotoğraf arşivi",
@@ -35,6 +46,9 @@ const copy = {
     next: "Sonraki görsel",
     archive: "Arşiv görseli",
     swipe: "Gezinmek için kaydırın",
+    zoom: "Görseli yakınlaştır",
+    resetZoom: "Görsel yakınlaştırmasını sıfırla",
+    download: "Görseli indir",
   },
 };
 
@@ -43,6 +57,7 @@ export default function ArchiveGallery({ language = "en" }) {
   const dialogRef = useRef(null);
   const touchStartRef = useRef(null);
   const [active, setActive] = useState(null);
+  const [zoomed, setZoomed] = useState(false);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -52,7 +67,13 @@ export default function ArchiveGallery({ language = "en" }) {
   }, [active]);
 
   function move(direction) {
+    setZoomed(false);
     setActive((current) => (current + direction + images.length) % images.length);
+  }
+
+  function closeGallery() {
+    setZoomed(false);
+    setActive(null);
   }
 
   function beginSwipe(event) {
@@ -61,6 +82,7 @@ export default function ArchiveGallery({ language = "en" }) {
   }
 
   function endSwipe(event) {
+    if (zoomed) return;
     if (!touchStartRef.current) return;
     const touch = event.changedTouches[0];
     const deltaX = touch.clientX - touchStartRef.current.x;
@@ -110,10 +132,10 @@ export default function ArchiveGallery({ language = "en" }) {
         onClose={() => setActive(null)}
         onCancel={(event) => {
           event.preventDefault();
-          setActive(null);
+          closeGallery();
         }}
         onClick={(event) => {
-          if (event.target === event.currentTarget) setActive(null);
+          if (event.target === event.currentTarget) closeGallery();
         }}
         aria-label={text.title}
       >
@@ -130,24 +152,46 @@ export default function ArchiveGallery({ language = "en" }) {
                 </span>
                 <small>{text.swipe}</small>
               </div>
-              <button type="button" onClick={() => setActive(null)} aria-label={text.close}>
+              <button type="button" onClick={closeGallery} aria-label={text.close}>
                 <X />
               </button>
             </div>
-            <img
-              src={`/images/archive/${images[active][0]}.webp`}
-              alt={
-                language === "tr" ? `${text.archive} ${active + 1}` : images[active][1]
-              }
-              width="1200"
-              height="900"
-              draggable="false"
-            />
+            <div className={`gallery-dialog__canvas ${zoomed ? "is-zoomed" : ""}`}>
+              <img
+                src={`/images/archive/${images[active][0]}.webp`}
+                alt={
+                  language === "tr" ? `${text.archive} ${active + 1}` : images[active][1]
+                }
+                width="1200"
+                height="900"
+                draggable="false"
+                onClick={() => setZoomed((value) => !value)}
+              />
+            </div>
             <div className="gallery-dialog__controls">
               <button type="button" onClick={() => move(-1)} aria-label={text.previous}>
                 <ArrowLeft />
                 <span>{text.previous}</span>
               </button>
+              <div className="gallery-dialog__tools">
+                <button
+                  type="button"
+                  onClick={() => setZoomed((value) => !value)}
+                  aria-label={zoomed ? text.resetZoom : text.zoom}
+                  aria-pressed={zoomed}
+                >
+                  {zoomed ? <ZoomOut /> : <ZoomIn />}
+                  <span>{zoomed ? text.resetZoom : text.zoom}</span>
+                </button>
+                <a
+                  href={`/images/archive/${images[active][0]}.webp`}
+                  download
+                  aria-label={text.download}
+                >
+                  <Download />
+                  <span>{text.download}</span>
+                </a>
+              </div>
               <button type="button" onClick={() => move(1)} aria-label={text.next}>
                 <span>{text.next}</span>
                 <ArrowRight />
