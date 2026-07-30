@@ -180,13 +180,13 @@ html.is-transitioning .route-transition-indicator {
   animation: scroll-cue 1.8s ease-in-out infinite;
 }
 
-.page-hero__inner > .eyebrow,
+.page-hero__copy > .eyebrow,
 .product-hero .back-link,
 .format-hero .back-link {
   animation: page-intro-rise 560ms 60ms var(--ease-out-expo) both;
 }
 
-.page-hero__inner > h1,
+.page-hero__copy > h1,
 .product-hero__title h1,
 .format-hero__copy h1 {
   animation: page-intro-rise 700ms 110ms var(--ease-out-expo) both;
@@ -198,9 +198,17 @@ html.is-transitioning .route-transition-indicator {
   animation: page-intro-rise 680ms 180ms var(--ease-out-expo) both;
 }
 
-.page-hero__inner > :last-child:not(.page-hero__intro),
+.page-hero__copy > :last-child:not(.page-hero__intro),
 .format-hero__actions {
   animation: page-intro-rise 650ms 240ms var(--ease-out-expo) both;
+}
+
+.page-hero__visual {
+  animation: profile-panel-arrive 780ms 180ms var(--ease-out-expo) both;
+}
+
+.page-hero__icon {
+  animation: mobile-icon-breathe 4.6s ease-in-out infinite;
 }
 
 .product-hero__icon {

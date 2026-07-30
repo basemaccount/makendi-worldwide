@@ -711,15 +711,33 @@ function CategoryCard({ category, language, featured = false }) {
   );
 }
 
-function PageHero({ eyebrow, title, intro, children, tone = "navy" }) {
+function PageHero({
+  eyebrow,
+  title,
+  intro,
+  children,
+  tone = "navy",
+  variant = "global",
+  index = "00",
+  icon: Icon = Globe2,
+}) {
   return (
-    <section className={`page-hero page-hero--${tone}`}>
+    <section className={`page-hero page-hero--${tone} page-hero--${variant}`}>
       <div className="page-hero__mesh" aria-hidden="true" />
       <div className="container page-hero__inner">
-        <p className="eyebrow eyebrow--orange">{eyebrow}</p>
-        <h1>{title}</h1>
-        <p className="page-hero__intro">{intro}</p>
-        {children}
+        <div className="page-hero__copy">
+          <p className="eyebrow eyebrow--orange">{eyebrow}</p>
+          <h1>{title}</h1>
+          <p className="page-hero__intro">{intro}</p>
+          {children}
+        </div>
+        <div className="page-hero__visual" aria-hidden="true">
+          <span className="page-hero__index">{index}</span>
+          <span className="page-hero__icon">
+            <Icon />
+          </span>
+          <span className="page-hero__orbit" />
+        </div>
       </div>
     </section>
   );
@@ -998,7 +1016,7 @@ function HomePage({ language }) {
             </Link>
           </div>
           <div className="network-feature__visual reveal">
-            <img src="/images/world-map.svg" alt="" width="1000" height="520" loading="lazy" />
+            <img src="/images/world-map.svg" alt="" width="1000" height="520" decoding="async" />
             <div className="flag-orbit" aria-hidden="true">
               {destinationCountries.slice(0, 8).map((country, index) => (
                 <span
@@ -1006,7 +1024,7 @@ function HomePage({ language }) {
                   style={{ "--orbit-index": index }}
                   key={country.iso}
                 >
-                  <img src={`/flags/${country.iso}.svg`} alt="" width="34" height="24" loading="lazy" />
+                  <img src={`/flags/${country.iso}.svg`} alt="" width="34" height="24" decoding="async" />
                 </span>
               ))}
             </div>
@@ -1078,6 +1096,9 @@ function ProductsPage({ language }) {
         eyebrow={text.products.eyebrow}
         title={text.products.title}
         intro={text.products.intro}
+        variant="portfolio"
+        index="01"
+        icon={PackageCheck}
       >
         <label className="portfolio-search">
           <Search aria-hidden="true" />
@@ -1394,6 +1415,9 @@ function SolutionsPage({ language }) {
         eyebrow={text.solutions.eyebrow}
         title={text.solutions.title}
         intro={text.solutions.intro}
+        variant="process"
+        index="02"
+        icon={Factory}
       />
       <section className="section section--cream">
         <div className="container">
@@ -1467,6 +1491,9 @@ function NetworkPage({ language }) {
         eyebrow={text.network.eyebrow}
         title={text.network.title}
         intro={text.network.intro}
+        variant="atlas"
+        index="03"
+        icon={Globe2}
       />
       <section className="atlas-section section section--navy">
         <div className="container">
@@ -1476,7 +1503,12 @@ function NetworkPage({ language }) {
       <section className="atlas-notes section section--cream">
         <div className="container">
           <SectionHeading eyebrow="02 / Context" title={text.network.noteTitle} />
-          <div className="atlas-note-grid">
+          <div
+            className="atlas-note-grid"
+            role="region"
+            aria-label={text.network.noteTitle}
+            tabIndex="0"
+          >
             <article className="atlas-note reveal">
               <MapPin />
               <span>01</span>
@@ -1504,6 +1536,9 @@ function CompanyPage({ language }) {
         eyebrow={text.company.eyebrow}
         title={text.company.title}
         intro={text.company.intro}
+        variant="company"
+        index="04"
+        icon={Building2}
       />
       <section className="company-story section section--cream">
         <div className="container company-story__grid">
@@ -1577,6 +1612,9 @@ function QualityPage({ language }) {
         eyebrow={text.quality.eyebrow}
         title={text.quality.title}
         intro={text.quality.intro}
+        variant="quality"
+        index="05"
+        icon={ShieldCheck}
       />
       <section className="quality-page section section--cream">
         <div className="container quality-page__grid">
@@ -1630,6 +1668,9 @@ function ResponsibilityPage({ language }) {
         eyebrow={text.responsibility.eyebrow}
         title={text.responsibility.title}
         intro={text.responsibility.intro}
+        variant="responsibility"
+        index="06"
+        icon={HeartHandshake}
       />
       <section className="responsibility-story section section--cream">
         <div className="container responsibility-story__grid">
@@ -1693,6 +1734,9 @@ function ArchivePage({ language }) {
         eyebrow={text.archive.eyebrow}
         title={text.archive.title}
         intro={text.archive.intro}
+        variant="archive"
+        index="07"
+        icon={FileText}
       />
       <section className="document-section section section--cream">
         <div className="container">
@@ -1784,6 +1828,9 @@ function ContactPage({ language }) {
         eyebrow={text.contact.eyebrow}
         title={text.contact.title}
         intro={text.contact.intro}
+        variant="contact"
+        index="08"
+        icon={Mail}
       />
       <section className="contact-section section section--cream">
         <div className="container">
@@ -1842,6 +1889,9 @@ function PrivacyPage({ language }) {
         eyebrow={text.privacy.eyebrow}
         title={text.privacy.title}
         intro={text.privacy.intro}
+        variant="privacy"
+        index="09"
+        icon={ShieldCheck}
       />
       <section className="section section--cream">
         <div className="container legal-content">
