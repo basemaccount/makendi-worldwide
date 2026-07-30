@@ -31,6 +31,7 @@ import {
   Navigate,
   Route,
   Routes,
+  runViewTransition,
   useLocation,
   useParams,
   useSearchParams,
@@ -2032,12 +2033,13 @@ export default function App() {
   });
 
   function setLanguage(next) {
-    setLanguageState(next);
+    if (next === language) return;
     try {
       localStorage.setItem("makendi-language", next);
     } catch {
       // The interface still updates when browser storage is unavailable.
     }
+    runViewTransition(() => setLanguageState(next), { kind: "language" });
   }
 
   return (

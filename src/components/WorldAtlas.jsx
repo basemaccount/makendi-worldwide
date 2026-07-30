@@ -117,7 +117,11 @@ export default function WorldAtlas({ language = "en", compact = false }) {
             ))}
           </div>
 
-          <article className="touchpoint-card" aria-live="polite">
+          <article
+            className="touchpoint-card"
+            aria-live="polite"
+            key={activePoint.iso}
+          >
             <div className="touchpoint-card__flag">
               <Flag
                 iso={activePoint.iso}
@@ -179,7 +183,7 @@ export default function WorldAtlas({ language = "en", compact = false }) {
           </div>
 
           <div className="destination-grid" aria-label={text.directory}>
-            {filteredCountries.map((country) => {
+            {filteredCountries.map((country, index) => {
               const active = selectedIso === country.iso;
               return (
                 <button
@@ -187,6 +191,7 @@ export default function WorldAtlas({ language = "en", compact = false }) {
                   className={`destination-chip ${active ? "is-selected" : ""}`}
                   onClick={() => setSelectedIso(active ? "" : country.iso)}
                   aria-pressed={active}
+                  style={{ "--chip-index": index % 8 }}
                   key={country.iso}
                 >
                   <Flag iso={country.iso} name={localized(country.name, language)} />

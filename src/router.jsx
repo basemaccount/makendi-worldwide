@@ -7,6 +7,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { flushSync } from "react-dom";
 
 const RouterContext = createContext({
   pathname: "/",
@@ -14,6 +15,43 @@ const RouterContext = createContext({
   navigate: () => {},
 });
 const ParamsContext = createContext({});
+let activeViewTransition = null;
+
+function reducedMotionRequested() {
+  return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+}
+
+export function runViewTransition(update, { kind = "route" } = {}) {
+  if (
+    !document.startViewTransition ||
+    reducedMotionRequested()
+  ) {
+    update();
+    return null;
+  }
+
+  activeViewTransition?.skipTransition?.();
+  document.documentElement.dataset.transitionKind = kind;
+  document.documentElement.classList.add("is-transitioning");
+
+  const transition = document.startViewTransition(() => {
+    flushSync(update);
+  });
+  activeViewTransition = transition;
+  transition.ready.catch(() => {});
+
+  transition.finished
+    .catch(() => {})
+    .finally(() => {
+      if (activeViewTransition === transition) {
+        activeViewTransition = null;
+        document.documentElement.classList.remove("is-transitioning");
+        delete document.documentElement.dataset.transitionKind;
+      }
+    });
+
+  return transition;
+}
 
 function currentLocation() {
   return {
@@ -26,17 +64,38 @@ export function BrowserRouter({ children }) {
   const [location, setLocation] = useState(currentLocation);
 
   useEffect(() => {
-    const update = () => setLocation(currentLocation());
+    const update = () =>
+      runViewTransition(() => {
+        window.scrollTo({ top: 0, behavior: "instant" });
+        setLocation(currentLocation());
+      }, { kind: "history" });
     window.addEventListener("popstate", update);
     return () => window.removeEventListener("popstate", update);
   }, []);
 
-  function navigate(to, { replace = false } = {}) {
+  function navigate(to, { replace = false, transition = true } = {}) {
     const next = new URL(to, window.location.href);
     const nextPath = `${next.pathname}${next.search}${next.hash}`;
-    if (replace) window.history.replaceState({}, "", nextPath);
-    else window.history.pushState({}, "", nextPath);
-    setLocation(currentLocation());
+    const pathnameChanged = next.pathname !== location.pathname;
+    const updateLocation = () => {
+      if (pathnameChanged) {
+        window.scrollTo({ top: 0, behavior: "instant" });
+      }
+      setLocation(currentLocation());
+    };
+    const commit = () => {
+      if (replace) window.history.replaceState({}, "", nextPath);
+      else window.history.pushState({}, "", nextPath);
+      updateLocation();
+    };
+
+    if (transition && pathnameChanged) {
+      if (replace) window.history.replaceState({}, "", nextPath);
+      else window.history.pushState({}, "", nextPath);
+      runViewTransition(updateLocation, { kind: "route" });
+    } else {
+      commit();
+    }
   }
 
   const value = useMemo(
@@ -158,7 +217,7 @@ export function Routes({ children }) {
 export function Navigate({ to, replace = false }) {
   const { navigate } = useContext(RouterContext);
   useEffect(() => {
-    navigate(to, { replace });
+    navigate(to, { replace, transition: false });
   }, [navigate, replace, to]);
   return null;
 }

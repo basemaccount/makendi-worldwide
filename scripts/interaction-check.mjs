@@ -40,6 +40,9 @@ await desktop.goBack();
 assert.equal(new URL(desktop.url()).pathname, "/");
 
 await desktop.getByRole("button", { name: "TR" }).click();
+await desktop.waitForFunction(
+  () => document.querySelector("h1")?.textContent?.includes("Bileşenler"),
+);
 assert.equal(await desktop.locator("html").getAttribute("lang"), "tr");
 assert.match(await desktop.locator("h1").innerText(), /Bileşenler/);
 await desktop.getByRole("button", { name: "EN" }).click();
