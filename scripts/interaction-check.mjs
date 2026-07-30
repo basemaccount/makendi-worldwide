@@ -4,6 +4,13 @@ import { chromium } from "@playwright/test";
 const base = process.env.TEST_BASE_URL || "http://127.0.0.1:4173";
 const browser = await chromium.launch({ headless: true });
 
+async function clickAndWaitForPath(page, locator, pathname) {
+  await Promise.all([
+    page.waitForURL((url) => url.pathname === pathname),
+    locator.click(),
+  ]);
+}
+
 const desktop = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
 const errors = [];
 desktop.on("pageerror", (error) => errors.push(error.message));
@@ -12,21 +19,33 @@ desktop.on("console", (message) => {
 });
 
 await desktop.goto(base, { waitUntil: "networkidle" });
-await desktop.getByRole("navigation", { name: "Main menu" }).getByRole("link", { name: "Ingredients", exact: true }).click();
+await clickAndWaitForPath(
+  desktop,
+  desktop.getByRole("navigation", { name: "Main menu" }).getByRole("link", { name: "Ingredients", exact: true }),
+  "/products",
+);
 assert.equal(new URL(desktop.url()).pathname, "/products");
 
 const search = desktop.getByPlaceholder("Search ingredients or families");
 await search.fill("coffee");
 await desktop.waitForTimeout(100);
 assert.equal(await desktop.locator(".category-card").count(), 1);
-await desktop.locator(".category-card").click();
+await clickAndWaitForPath(desktop, desktop.locator(".category-card"), "/products/coffee");
 assert.equal(new URL(desktop.url()).pathname, "/products/coffee");
-await desktop.getByRole("link", { name: "Freeze-dried Coffee", exact: true }).click();
+await clickAndWaitForPath(
+  desktop,
+  desktop.getByRole("link", { name: "Freeze-dried Coffee", exact: true }),
+  "/products/coffee/freeze-dried-coffee",
+);
 assert.equal(
   new URL(desktop.url()).pathname,
   "/products/coffee/freeze-dried-coffee",
 );
-await desktop.getByRole("link", { name: "Ask about this format", exact: true }).first().click();
+await clickAndWaitForPath(
+  desktop,
+  desktop.getByRole("link", { name: "Ask about this format", exact: true }).first(),
+  "/contact",
+);
 assert.equal(new URL(desktop.url()).pathname, "/contact");
 assert.equal(await desktop.locator('select[name="category"]').inputValue(), "coffee");
 assert.equal(
@@ -50,7 +69,11 @@ await desktop.getByRole("button", { name: "EN" }).click();
 await desktop.goto(`${base}/network`, { waitUntil: "networkidle" });
 await desktop.getByRole("button", { name: "Europe" }).click();
 await desktop.getByRole("button", { name: "Germany" }).click();
-await desktop.getByRole("link", { name: "Add to inquiry" }).click();
+await clickAndWaitForPath(
+  desktop,
+  desktop.getByRole("link", { name: "Add to inquiry" }),
+  "/contact",
+);
 assert.equal(new URL(desktop.url()).pathname, "/contact");
 assert.equal(await desktop.locator('select[name="destination"]').inputValue(), "de");
 
@@ -68,7 +91,11 @@ const mobile = await browser.newPage({ viewport: { width: 390, height: 844 } });
 await mobile.goto(base, { waitUntil: "networkidle" });
 await mobile.getByRole("button", { name: "Open menu" }).click();
 assert.equal(await mobile.getByRole("button", { name: "Close menu" }).getAttribute("aria-expanded"), "true");
-await mobile.getByRole("link", { name: "Destinations" }).click();
+await clickAndWaitForPath(
+  mobile,
+  mobile.getByRole("link", { name: "Destinations" }),
+  "/network",
+);
 assert.equal(new URL(mobile.url()).pathname, "/network");
 assert.equal(await mobile.getByRole("button", { name: "Open menu" }).getAttribute("aria-expanded"), "false");
 

@@ -45,7 +45,7 @@ const copy = {
   },
 };
 
-function Flag({ iso, name, size = "small" }) {
+function Flag({ iso, name: _name, size = "small" }) {
   return (
     <span className={`flag flag--${size}`} aria-hidden="true">
       <img src={`/flags/${iso}.svg`} alt="" width="32" height="22" loading="lazy" />

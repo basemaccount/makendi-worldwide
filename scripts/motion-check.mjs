@@ -26,10 +26,13 @@ const revealKinds = await desktop
 assert.ok(revealKinds.includes("card"), "Card choreography was not assigned");
 assert.ok(revealKinds.includes("heading"), "Heading choreography was not assigned");
 
-await desktop
-  .getByRole("navigation", { name: "Main menu" })
-  .getByRole("link", { name: "Ingredients", exact: true })
-  .click();
+await Promise.all([
+  desktop.waitForURL("**/products"),
+  desktop
+    .getByRole("navigation", { name: "Main menu" })
+    .getByRole("link", { name: "Ingredients", exact: true })
+    .click(),
+]);
 assert.equal(new URL(desktop.url()).pathname, "/products");
 assert.equal(
   await desktop.locator("html").evaluate((node) =>

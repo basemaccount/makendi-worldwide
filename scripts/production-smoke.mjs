@@ -11,6 +11,9 @@ for (const path of paths) {
     const headers = response.headers;
     assert.equal(headers.get("x-content-type-options"), "nosniff");
     assert.ok(headers.get("content-security-policy")?.includes("default-src 'self'"));
+    assert.equal(headers.get("cross-origin-resource-policy"), "same-origin");
+    assert.equal(headers.get("origin-agent-cluster"), "?1");
+    assert.equal(headers.get("x-dns-prefetch-control"), "off");
   }
 }
 
