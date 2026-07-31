@@ -20,9 +20,20 @@ desktop.on("console", (message) => {
 
 await desktop.goto(base, { waitUntil: "networkidle" });
 const discoveryTrigger = desktop.getByRole("button", { name: "Open quick discovery" });
+assert.equal(await desktop.locator(".discovery-deck").count(), 0, "portfolio compass mounted before search intent");
 await discoveryTrigger.click();
 assert.equal(await desktop.locator(".discovery-deck").evaluate((dialog) => dialog.open), true);
-await desktop.getByPlaceholder("Search ingredient, family, destination or page…").fill("freeze");
+const discoveryInput = desktop.getByPlaceholder("Search ingredient, family, destination or page…");
+assert.equal(await discoveryInput.evaluate((element) => document.activeElement === element), true, "portfolio compass did not focus its input");
+assert.equal(await desktop.locator(".discovery-deck__quick-picks button").count(), 4, "portfolio compass did not expose quick family filters");
+await desktop.locator(".discovery-deck__quick-picks button").first().click();
+assert.match(await discoveryInput.inputValue(), /starch/i, "portfolio quick filter did not update the query");
+await desktop.getByRole("button", { name: "Clear search" }).click();
+assert.equal(await discoveryInput.inputValue(), "", "portfolio clear control did not reset the query");
+await discoveryInput.fill("freeze");
+await desktop.locator('.discovery-deck__results a[href="/products/coffee/freeze-dried-coffee"]').waitFor();
+await desktop.waitForFunction(() => document.querySelector(".discovery-deck__results")?.getAttribute("aria-busy") === "false");
+assert.equal(await desktop.locator(".discovery-deck__results").getAttribute("aria-busy"), "false", "portfolio results remained busy after deferred filtering");
 assert.equal(await desktop.locator('.discovery-deck__results a[href="/products/coffee/freeze-dried-coffee"]').count(), 1);
 await clickAndWaitForPath(desktop, desktop.locator('.discovery-deck__results a[href="/products/coffee/freeze-dried-coffee"]'), "/products/coffee/freeze-dried-coffee");
 await desktop.goto(base, { waitUntil: "networkidle" });
@@ -33,6 +44,21 @@ assert.equal(await desktop.locator("html").getAttribute("data-motion"), "calm");
 await motionControl.click();
 await desktop.keyboard.press("Escape");
 assert.equal(await discoveryTrigger.evaluate((element) => document.activeElement === element), true);
+
+const discoveryMobile = await browser.newPage({ viewport: { width: 390, height: 844 }, hasTouch: true });
+await discoveryMobile.goto(base, { waitUntil: "networkidle" });
+await discoveryMobile.keyboard.press("Control+k");
+await discoveryMobile.getByPlaceholder("Search ingredient, family, destination or page…").fill("cocoa");
+await discoveryMobile.getByRole("button", { name: "Clear search" }).waitFor();
+await discoveryMobile.waitForTimeout(240);
+const mobileClearBounds = await discoveryMobile.getByRole("button", { name: "Clear search" }).boundingBox();
+const mobileChipBounds = await discoveryMobile.locator(".discovery-deck__quick-picks button").first().boundingBox();
+assert.ok(mobileClearBounds?.width >= 43.5 && mobileClearBounds?.height >= 43.5, `portfolio mobile clear control was smaller than 44px: ${JSON.stringify(mobileClearBounds)}`);
+assert.ok(mobileChipBounds?.height >= 43.5, "portfolio mobile quick filter was smaller than 44px");
+assert.equal(await discoveryMobile.locator(".discovery-deck").evaluate((dialog) => getComputedStyle(dialog, "::backdrop").backdropFilter), "none", "portfolio mobile backdrop retained an expensive blur filter");
+assert.equal(await discoveryMobile.evaluate(() => document.documentElement.scrollWidth === document.documentElement.clientWidth), true, "portfolio compass overflowed on mobile");
+assert.match(await discoveryMobile.locator(".discovery-deck__results > a").first().evaluate((element) => getComputedStyle(element).animationName), /mobile/, "portfolio results did not use the mobile motion treatment");
+await discoveryMobile.close();
 
 await desktop.goto(base, { waitUntil: "networkidle" });
 await clickAndWaitForPath(

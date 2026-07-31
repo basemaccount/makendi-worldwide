@@ -813,7 +813,7 @@ function Header({ language, setLanguage }) {
         </nav>
 
         <div className="site-header__actions">
-          <button className="discovery-trigger" type="button" onClick={(event) => window.dispatchEvent(new CustomEvent("app:open-discovery", { detail: { trigger: event.currentTarget } }))} aria-label={language === "tr" ? "Hızlı keşfi aç" : "Open quick discovery"}><Search aria-hidden="true" /></button>
+          <button className="discovery-trigger" type="button" onPointerEnter={() => window.dispatchEvent(new Event("app:preload-discovery"))} onFocus={() => window.dispatchEvent(new Event("app:preload-discovery"))} onTouchStart={() => window.dispatchEvent(new Event("app:preload-discovery"))} onClick={(event) => window.dispatchEvent(new CustomEvent("app:open-discovery", { detail: { trigger: event.currentTarget } }))} aria-label={language === "tr" ? "Hızlı keşfi aç" : "Open quick discovery"}><Search aria-hidden="true" /></button>
           <div className="language-switcher" aria-label={language === "tr" ? "Dil seçimi" : "Language"}>
             {["en", "tr"].map((code) => (
               <button
@@ -875,7 +875,7 @@ function Header({ language, setLanguage }) {
               </NavLink>
             ))}
           </nav>
-          <button className="button button--orange button--wide mobile-discovery-trigger" type="button" onClick={() => { setOpen(false); window.setTimeout(() => window.dispatchEvent(new CustomEvent("app:open-discovery", { detail: { trigger: menuToggleRef.current } })), 0); }}><Search aria-hidden="true" />{language === "tr" ? "Portföyde hızlı ara" : "Quick search the portfolio"}</button>
+          <button className="button button--orange button--wide mobile-discovery-trigger" type="button" onPointerEnter={() => window.dispatchEvent(new Event("app:preload-discovery"))} onFocus={() => window.dispatchEvent(new Event("app:preload-discovery"))} onTouchStart={() => window.dispatchEvent(new Event("app:preload-discovery"))} onClick={() => { setOpen(false); window.setTimeout(() => window.dispatchEvent(new CustomEvent("app:open-discovery", { detail: { trigger: menuToggleRef.current } })), 0); }}><Search aria-hidden="true" />{language === "tr" ? "Portföyde hızlı ara" : "Quick search the portfolio"}</button>
           <Link className="button button--orange button--wide" to="/contact">
             {text.nav.contact}
             <ArrowUpRight size={18} />

@@ -1,12 +1,34 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { ArrowUp } from "lucide-react";
 import { useLocation } from "../router.jsx";
-import DiscoveryDeck from "./DiscoveryDeck.jsx";
+
+const loadDiscoveryDeck = () => import("./DiscoveryDeck.jsx");
+const DiscoveryDeck = lazy(loadDiscoveryDeck);
 
 export default function ExperienceLayer({ language = "en" }) {
   const location = useLocation();
   const progressRef = useRef(null);
   const [showTop, setShowTop] = useState(false);
+  const [discoveryRequest, setDiscoveryRequest] = useState(null);
+
+  useEffect(() => {
+    const show = (event) => setDiscoveryRequest({ id: window.performance.now(), trigger: event.detail?.trigger || document.activeElement });
+    const preload = () => { void loadDiscoveryDeck(); };
+    const onKeyDown = (event) => {
+      const target = event.target;
+      const editing = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target?.isContentEditable;
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") { event.preventDefault(); show(event); }
+      else if (!editing && event.key === "/") { event.preventDefault(); show(event); }
+    };
+    window.addEventListener("app:open-discovery", show);
+    window.addEventListener("app:preload-discovery", preload);
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("app:open-discovery", show);
+      window.removeEventListener("app:preload-discovery", preload);
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, []);
 
   useEffect(() => {
     const main = document.getElementById("main-content");
@@ -134,7 +156,7 @@ export default function ExperienceLayer({ language = "en" }) {
 
   return (
     <>
-      <DiscoveryDeck language={language} />
+      {discoveryRequest && <Suspense fallback={null}><DiscoveryDeck language={language} openRequest={discoveryRequest} /></Suspense>}
       <div className="scroll-progress" aria-hidden="true">
         <span ref={progressRef} />
       </div>
