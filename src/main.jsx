@@ -5,6 +5,7 @@ import "./styles.css";
 import "./archive.css";
 import "./motion.css";
 import "./mobile.css";
+import "./discovery-deck.css";
 import { BrowserRouter } from "./router.jsx";
 
 createRoot(document.getElementById("root")).render(

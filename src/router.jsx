@@ -17,7 +17,7 @@ import {
 let activeViewTransition = null;
 
 function reducedMotionRequested() {
-  return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  return document.documentElement.dataset.motion === "calm" || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 }
 
 export function runViewTransition(update, { kind = "route" } = {}) {

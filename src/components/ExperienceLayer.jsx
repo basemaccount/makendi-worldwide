@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowUp } from "lucide-react";
 import { useLocation } from "../router.jsx";
+import DiscoveryDeck from "./DiscoveryDeck.jsx";
 
 export default function ExperienceLayer({ language = "en" }) {
   const location = useLocation();
@@ -133,6 +134,7 @@ export default function ExperienceLayer({ language = "en" }) {
 
   return (
     <>
+      <DiscoveryDeck language={language} />
       <div className="scroll-progress" aria-hidden="true">
         <span ref={progressRef} />
       </div>

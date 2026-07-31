@@ -161,6 +161,10 @@
     display: none;
   }
 
+  .mobile-discovery-trigger {
+    display: flex;
+  }
+
   .menu-toggle svg {
     width: 22px;
     height: 22px;
@@ -1325,6 +1329,10 @@
 
   .site-header__brand {
     width: 126px;
+  }
+
+  .site-header__actions > .discovery-trigger {
+    display: none;
   }
 
   .site-header__actions {

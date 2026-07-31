@@ -19,6 +19,22 @@ desktop.on("console", (message) => {
 });
 
 await desktop.goto(base, { waitUntil: "networkidle" });
+const discoveryTrigger = desktop.getByRole("button", { name: "Open quick discovery" });
+await discoveryTrigger.click();
+assert.equal(await desktop.locator(".discovery-deck").evaluate((dialog) => dialog.open), true);
+await desktop.getByPlaceholder("Search ingredient, family, destination or page…").fill("freeze");
+assert.equal(await desktop.locator('.discovery-deck__results a[href="/products/coffee/freeze-dried-coffee"]').count(), 1);
+await clickAndWaitForPath(desktop, desktop.locator('.discovery-deck__results a[href="/products/coffee/freeze-dried-coffee"]'), "/products/coffee/freeze-dried-coffee");
+await desktop.goto(base, { waitUntil: "networkidle" });
+await desktop.getByRole("button", { name: "Open quick discovery" }).click();
+const motionControl = desktop.locator(".discovery-deck__footer > button");
+await motionControl.click();
+assert.equal(await desktop.locator("html").getAttribute("data-motion"), "calm");
+await motionControl.click();
+await desktop.keyboard.press("Escape");
+assert.equal(await discoveryTrigger.evaluate((element) => document.activeElement === element), true);
+
+await desktop.goto(base, { waitUntil: "networkidle" });
 await clickAndWaitForPath(
   desktop,
   desktop.getByRole("navigation", { name: "Main menu" }).getByRole("link", { name: "Ingredients", exact: true }),
