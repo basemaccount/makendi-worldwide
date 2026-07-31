@@ -9,6 +9,73 @@
   --motion-slow: 760ms;
 }
 
+.discovery-trigger {
+  width: 46px;
+  height: 46px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid rgba(7, 26, 53, 0.12);
+  border-radius: 12px;
+  background: var(--cream-100);
+  color: var(--navy-900);
+  transition: transform 220ms var(--ease-out-expo), background 180ms ease, border-color 180ms ease, opacity 180ms ease;
+  touch-action: manipulation;
+}
+.discovery-trigger svg { width: 18px; transition: transform 250ms var(--ease-out-expo); }
+.discovery-trigger.is-loading { cursor: progress; opacity: 0.76; }
+.discovery-trigger.is-loading svg,
+.menu-toggle.is-loading svg { animation: discovery-trigger-loading 760ms linear infinite; }
+
+.discovery-boot {
+  position: fixed;
+  z-index: 1550;
+  top: 92px;
+  left: 50%;
+  width: min(440px, calc(100vw - 28px));
+  min-height: 62px;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 15px;
+  background: rgba(7, 26, 53, 0.98);
+  color: var(--white);
+  transform: translateX(-50%);
+  animation: discovery-boot-in 260ms var(--ease-out-expo) both;
+}
+.discovery-boot.is-error { background: rgba(103, 35, 40, 0.98); }
+.discovery-boot__signal { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 50%; }
+.discovery-boot__signal > span { width: 13px; height: 13px; border: 2px solid rgba(255, 255, 255, 0.35); border-top-color: var(--orange-400); border-radius: 50%; animation: discovery-trigger-loading 760ms linear infinite; }
+.discovery-boot.is-error .discovery-boot__signal > span { border: 0; background: var(--orange-400); animation: discovery-error-pulse 1.4s ease-in-out infinite; }
+.discovery-boot__copy { min-width: 0; display: grid; }
+.discovery-boot__copy strong { font-size: 11px; }
+.discovery-boot__copy small { color: rgba(255, 255, 255, 0.72); font-size: 9px; line-height: 1.4; }
+.discovery-boot > button { min-height: 40px; padding-inline: 13px; border: 1px solid rgba(255, 255, 255, 0.26); border-radius: 10px; background: rgba(255, 255, 255, 0.1); color: inherit; font-size: 9px; font-weight: 800; }
+
+@media (hover: hover) {
+  .discovery-trigger:hover,
+  .discovery-trigger:focus-visible { border-color: rgba(241, 149, 34, 0.54); background: var(--white); box-shadow: 0 10px 25px rgba(7, 26, 53, 0.11); transform: translateY(-2px); }
+  .discovery-trigger:hover svg,
+  .discovery-trigger:focus-visible svg { transform: rotate(-10deg) scale(1.08); }
+}
+
+@media (pointer: coarse) { .discovery-trigger:active { transform: scale(0.975); } }
+
+@keyframes discovery-trigger-loading { to { transform: rotate(360deg); } }
+@keyframes discovery-boot-in { from { opacity: 0; transform: translate(-50%, -10px) scale(0.98); } }
+@keyframes discovery-error-pulse { 50% { opacity: 0.45; transform: scale(0.72); } }
+
+@media (max-width: 760px) {
+  .discovery-boot { top: 74px; width: calc(100vw - 20px); min-height: 58px; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 10px; border-radius: 14px; }
+  .discovery-boot__signal { width: 32px; height: 32px; }
+}
+
+@media (max-width: 600px) {
+  .discovery-trigger { width: 44px; height: 44px; }
+  .discovery-boot__copy small { display: none; }
+}
+
 .site-header {
   view-transition-name: site-header;
 }

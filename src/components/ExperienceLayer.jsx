@@ -1,34 +1,118 @@
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowUp } from "lucide-react";
 import { useLocation } from "../router.jsx";
 
-const loadDiscoveryDeck = () => import("./DiscoveryDeck.jsx");
-const DiscoveryDeck = lazy(loadDiscoveryDeck);
+let discoveryModule;
+let discoveryModulePromise;
+
+const loadDiscoveryDeck = () => {
+  if (discoveryModule) return Promise.resolve(discoveryModule);
+  if (!discoveryModulePromise) {
+    discoveryModulePromise = import("./DiscoveryDeck.jsx")
+      .then((module) => {
+        discoveryModule = module;
+        return module;
+      })
+      .catch((error) => {
+        discoveryModulePromise = null;
+        throw error;
+      });
+  }
+  return discoveryModulePromise;
+};
+
+function setTriggerLoading(trigger, loading) {
+  if (!(trigger instanceof HTMLElement)) return;
+  trigger.classList.toggle("is-loading", loading);
+  if (loading) trigger.setAttribute("aria-busy", "true");
+  else trigger.removeAttribute("aria-busy");
+}
+
+function DiscoveryBoot({ error, language, onRetry }) {
+  const copy = language === "tr"
+    ? error
+      ? ["Arama yüklenemedi", "Bağlantıyı kontrol edip yeniden deneyin.", "Yeniden dene"]
+      : ["Portföy araması hazırlanıyor", "Bileşen pusulası bu sayfadan ayrılmadan açılıyor."]
+    : error
+      ? ["Search could not load", "Check your connection and try again.", "Try again"]
+      : ["Preparing portfolio search", "Opening the ingredient compass without leaving this page."];
+
+  return (
+    <div className={`discovery-boot ${error ? "is-error" : ""}`} role={error ? "alert" : "status"} aria-live={error ? "assertive" : "polite"} aria-atomic="true">
+      <span className="discovery-boot__signal" aria-hidden="true"><span /></span>
+      <span className="discovery-boot__copy"><strong>{copy[0]}</strong><small>{copy[1]}</small></span>
+      {error && <button type="button" onClick={onRetry}>{copy[2]}</button>}
+    </div>
+  );
+}
 
 export default function ExperienceLayer({ language = "en" }) {
   const location = useLocation();
   const progressRef = useRef(null);
   const [showTop, setShowTop] = useState(false);
   const [discoveryRequest, setDiscoveryRequest] = useState(null);
+  const [DiscoveryDeck, setDiscoveryDeck] = useState(() => discoveryModule?.default || null);
+  const [discoveryPending, setDiscoveryPending] = useState(false);
+  const [discoveryLoadError, setDiscoveryLoadError] = useState(false);
+  const discoveryAttempt = useRef(0);
+  const discoveryTrigger = useRef(null);
+  const lastDiscoveryRequest = useRef({ trigger: null, source: null });
+
+  const openDiscovery = useCallback((detail = {}) => {
+    const focusedElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const trigger = detail.trigger instanceof HTMLElement ? detail.trigger : focusedElement;
+    const source = detail.source instanceof HTMLElement ? detail.source : trigger;
+    const attempt = discoveryAttempt.current + 1;
+
+    discoveryAttempt.current = attempt;
+    lastDiscoveryRequest.current = { trigger, source };
+    setTriggerLoading(discoveryTrigger.current, false);
+    discoveryTrigger.current = source;
+    setTriggerLoading(source, true);
+    setDiscoveryLoadError(false);
+    setDiscoveryPending(true);
+
+    loadDiscoveryDeck()
+      .then((module) => {
+        if (discoveryAttempt.current !== attempt) return;
+        setDiscoveryDeck(() => module.default);
+        setDiscoveryRequest({ id: window.performance.now(), trigger });
+        setDiscoveryPending(false);
+        setTriggerLoading(source, false);
+      })
+      .catch(() => {
+        if (discoveryAttempt.current !== attempt) return;
+        setDiscoveryPending(false);
+        setDiscoveryLoadError(true);
+        setTriggerLoading(source, false);
+      });
+  }, []);
 
   useEffect(() => {
-    const show = (event) => setDiscoveryRequest({ id: window.performance.now(), trigger: event.detail?.trigger || document.activeElement });
-    const preload = () => { void loadDiscoveryDeck(); };
+    const show = (event) => openDiscovery(event.detail || {});
+    const preload = () => { void loadDiscoveryDeck().catch(() => {}); };
     const onKeyDown = (event) => {
       const target = event.target;
       const editing = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target?.isContentEditable;
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") { event.preventDefault(); show(event); }
-      else if (!editing && event.key === "/") { event.preventDefault(); show(event); }
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") { event.preventDefault(); openDiscovery({ trigger: document.activeElement }); }
+      else if (!editing && event.key === "/") { event.preventDefault(); openDiscovery({ trigger: document.activeElement }); }
     };
+    const warmTimer = window.setTimeout(() => {
+      const connection = navigator.connection;
+      if (!connection?.saveData && !/2g/.test(connection?.effectiveType || "")) preload();
+    }, 4000);
     window.addEventListener("app:open-discovery", show);
     window.addEventListener("app:preload-discovery", preload);
     window.addEventListener("keydown", onKeyDown);
     return () => {
+      window.clearTimeout(warmTimer);
+      discoveryAttempt.current += 1;
+      setTriggerLoading(discoveryTrigger.current, false);
       window.removeEventListener("app:open-discovery", show);
       window.removeEventListener("app:preload-discovery", preload);
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, []);
+  }, [openDiscovery]);
 
   useEffect(() => {
     const main = document.getElementById("main-content");
@@ -156,7 +240,8 @@ export default function ExperienceLayer({ language = "en" }) {
 
   return (
     <>
-      {discoveryRequest && <Suspense fallback={null}><DiscoveryDeck language={language} openRequest={discoveryRequest} /></Suspense>}
+      {(discoveryPending || discoveryLoadError) && <DiscoveryBoot error={discoveryLoadError} language={language} onRetry={() => openDiscovery(lastDiscoveryRequest.current)} />}
+      {DiscoveryDeck && discoveryRequest && <DiscoveryDeck language={language} openRequest={discoveryRequest} />}
       <div className="scroll-progress" aria-hidden="true">
         <span ref={progressRef} />
       </div>

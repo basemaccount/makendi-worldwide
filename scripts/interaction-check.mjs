@@ -11,6 +11,56 @@ async function clickAndWaitForPath(page, locator, pathname) {
   ]);
 }
 
+const slowSearchContext = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+const slowSearchPage = await slowSearchContext.newPage();
+let searchActivationArmed = false;
+let searchDocumentRequests = 0;
+let searchMainFrameNavigations = 0;
+await slowSearchPage.addInitScript(() => {
+  window.__searchLifecycle = [];
+  window.__searchDocumentToken = crypto.randomUUID();
+  addEventListener("beforeunload", () => window.__searchLifecycle.push("beforeunload"));
+  addEventListener("pagehide", () => window.__searchLifecycle.push("pagehide"));
+});
+slowSearchPage.on("request", (request) => {
+  if (searchActivationArmed && request.resourceType() === "document") searchDocumentRequests += 1;
+});
+slowSearchPage.on("framenavigated", (frame) => {
+  if (searchActivationArmed && frame === slowSearchPage.mainFrame()) searchMainFrameNavigations += 1;
+});
+await slowSearchPage.route(/\/assets\/DiscoveryDeck-[^/]+\.(?:js|css)(?:\?.*)?$/, async (route) => {
+  await new Promise((resolve) => setTimeout(resolve, 1_100));
+  await route.continue();
+});
+await slowSearchPage.goto(base, { waitUntil: "networkidle" });
+const originalSearchToken = await slowSearchPage.evaluate(() => window.__searchDocumentToken);
+const slowSearchTrigger = slowSearchPage.getByRole("button", { name: "Open quick discovery" });
+searchActivationArmed = true;
+await slowSearchTrigger.click();
+await slowSearchPage.locator(".discovery-boot").waitFor({ state: "visible", timeout: 350 });
+assert.equal(await slowSearchTrigger.getAttribute("aria-busy"), "true", "slow search activation did not expose immediate busy feedback");
+assert.equal(await slowSearchTrigger.getAttribute("aria-expanded"), "false", "search trigger expanded before its dialog was ready");
+await slowSearchPage.locator("#discovery-dialog").waitFor({ state: "attached", timeout: 5_000 });
+await slowSearchPage.waitForFunction(() => document.querySelector("#discovery-dialog")?.open === true);
+assert.equal(await slowSearchPage.locator(".discovery-boot").count(), 0, "search preparation feedback remained after the dialog opened");
+assert.equal(await slowSearchTrigger.getAttribute("aria-busy"), null, "search trigger remained busy after the dialog opened");
+assert.equal(await slowSearchTrigger.getAttribute("aria-expanded"), "true", "search trigger did not expose its expanded state");
+await slowSearchPage.keyboard.press("Escape");
+await slowSearchPage.waitForFunction(() => document.querySelector('[aria-controls="discovery-dialog"]')?.getAttribute("aria-expanded") === "false");
+assert.equal(await slowSearchTrigger.getAttribute("aria-expanded"), "false", "search trigger remained expanded after close");
+for (let index = 0; index < 3; index += 1) {
+  await slowSearchTrigger.click();
+  await slowSearchPage.waitForFunction(() => document.querySelector("#discovery-dialog")?.open === true);
+  await slowSearchPage.keyboard.press("Escape");
+  await slowSearchPage.waitForFunction(() => document.querySelector("#discovery-dialog")?.open === false);
+}
+assert.equal(searchDocumentRequests, 0, "search activation requested a replacement document");
+assert.equal(searchMainFrameNavigations, 0, "search activation caused a main-frame navigation");
+assert.equal(await slowSearchPage.evaluate((token) => window.__searchDocumentToken === token, originalSearchToken), true, "search activation replaced the browser document");
+assert.equal((await slowSearchPage.evaluate(() => window.__searchLifecycle)).length, 0, "search activation fired an unload lifecycle event");
+await slowSearchContext.close();
+console.log("Interaction progress: slow first search activation and repeated no-reload lifecycle checked.");
+
 const desktop = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
 const errors = [];
 desktop.on("pageerror", (error) => errors.push(error.message));
