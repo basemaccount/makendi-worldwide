@@ -36,7 +36,7 @@ await slowSearchPage.goto(base, { waitUntil: "networkidle" });
 const originalSearchToken = await slowSearchPage.evaluate(() => window.__searchDocumentToken);
 const slowSearchTrigger = slowSearchPage.getByRole("button", { name: "Open quick discovery" });
 searchActivationArmed = true;
-await slowSearchTrigger.click();
+await slowSearchTrigger.evaluate((element) => element.click());
 await slowSearchPage.locator(".discovery-boot").waitFor({ state: "visible", timeout: 350 });
 assert.equal(await slowSearchTrigger.getAttribute("aria-busy"), "true", "slow search activation did not expose immediate busy feedback");
 assert.equal(await slowSearchTrigger.getAttribute("aria-expanded"), "false", "search trigger expanded before its dialog was ready");
