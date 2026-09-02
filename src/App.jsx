@@ -49,6 +49,7 @@ import {
   localized,
 } from "./data/siteData.js";
 import {
+  categorySpecificationDocuments,
   productSpecification,
   productVisual,
   specificationDocumentUrl,
@@ -750,6 +751,56 @@ function SpecificationSheet({ category, product, language }) {
   );
 }
 
+function FamilySpecificationLibrary({ category, language }) {
+  const documents = categorySpecificationDocuments(category.slug);
+  if (!documents.length) return null;
+  const copy = language === "tr"
+    ? {
+        eyebrow: "Kaynak kütüphanesi",
+        title: "Bu aile için teknik dokümanlar",
+        intro: "Bu kaynaklar, sağlanan orijinal teknik dokümanlardır. Dosya adı, alıcının teknik ekiple aynı sürümü doğrulayabilmesi için korunur.",
+        open: "Dokümanı indir",
+        count: "kaynak doküman",
+      }
+    : {
+        eyebrow: "Source library",
+        title: "Technical documents for this family",
+        intro: "These are the original supplied technical-source records. The source filename is preserved so a buyer and technical team can verify the same revision.",
+        open: "Download document",
+        count: "source documents",
+      };
+  return (
+    <section className="section section--oat specification-library-section">
+      <div className="container">
+        <div className="specification-library__heading reveal">
+          <div>
+            <p className="eyebrow eyebrow--orange">{copy.eyebrow}</p>
+            <h2>{copy.title}</h2>
+          </div>
+          <p className="lede">{copy.intro}</p>
+          <span className="specification-library__count">{documents.length} {copy.count}</span>
+        </div>
+        <div className="specification-library">
+          {documents.map((source, index) => (
+            <a
+              className="specification-library__item reveal"
+              href={specificationDocumentUrl(source)}
+              download
+              key={source}
+              style={{ "--document-index": index % 8 }}
+            >
+              <span className="specification-library__number">{String(index + 1).padStart(2, "0")}</span>
+              <FileText aria-hidden="true" />
+              <span className="specification-library__name">{source.replace(/\.docx$/i, "")}</span>
+              <span className="specification-library__action">{copy.open}<Download size={16} aria-hidden="true" /></span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function SectionHeading({ eyebrow, title, intro, action, align = "split" }) {
   return (
     <div className={`section-heading section-heading--${align} reveal`}>
@@ -1337,6 +1388,8 @@ function ProductDetailPage({ language }) {
           </aside>
         </div>
       </section>
+
+      <FamilySpecificationLibrary category={category} language={language} />
 
       <section className="section section--oat related-section">
         <div className="container">

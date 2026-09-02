@@ -11,7 +11,11 @@ import {
   slugifyProduct,
   originCountries,
 } from "../src/data/siteData.js";
-import { productSpecification, specificationDocumentUrl } from "../src/data/productExperience.js";
+import {
+  categorySpecificationDocuments,
+  productSpecification,
+  specificationDocumentUrl,
+} from "../src/data/productExperience.js";
 
 assert.equal(categories.length, 12, "The catalog must contain 12 ingredient families");
 assert.equal(
@@ -54,6 +58,15 @@ for (const product of catalogProducts) {
     product,
   );
 }
+
+const suppliedDocuments = new Set();
+for (const category of categories) {
+  for (const source of categorySpecificationDocuments(category.slug)) {
+    suppliedDocuments.add(source);
+    await access(resolve("public/specifications/source", source));
+  }
+}
+assert.equal(suppliedDocuments.size, 47, "Every supplied technical source must be discoverable in its family library");
 
 assert.equal(destinationCountries.length, 28, "The destination desk must contain 28 countries");
 assert.equal(

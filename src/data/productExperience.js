@@ -130,3 +130,74 @@ const specifications = {
 export function productSpecification(categorySlug, productSlug) {
   return specifications[`${categorySlug}/${productSlug}`] || null;
 }
+
+// Every source record supplied in the current technical-sheet folder is kept
+// discoverable in its relevant family. The title remains the source title so a
+// buyer can match it precisely to the original document they receive.
+const sourceFilesByCategory = {
+  dairy: [
+    "50% Demineralized Whey Powder.docx",
+    "70% Demineralized Whey Powder 70-11.docx",
+    "70% Demineralized Whey Powder 70-7.docx",
+    "80% Demineralized Sweet Whey Powder.docx",
+    "90% Demineralized Whey Powder.docx",
+    "Fat Filled Milk Powder.docx",
+    "Instant Full Cream Milk Powder.docx",
+    "Makendi Evaporated Milk 7.5%.docx",
+    "Milk Protein Concentrate Powder MPC85.docx",
+    "MW_80pct_Demineralized_Sweet_Whey_Powder_MAK-80_Specification_SCG40_Layout_Corrected.docx",
+    "Skimmed Milk Powder.docx",
+    "Sweet butter, 82.5%.docx",
+    "Sweetened Condensed Milk Full Cream 8%.docx",
+    "Whole Milk Powder.docx",
+  ],
+  sweeteners: [
+    "HBSO MAKENDI GLUCOSE SYRUP SCG 40.docx",
+    "Makendi Crystalline Fructose C.docx",
+    "Makendi Crystalline Fructose M.docx",
+    "Makendi Dextrose Monohydrate 99.docx",
+    "Makendi Dextrose Monohydrate DXM-104.docx",
+    "Makendi Fructose Syrup.docx",
+    "Makendi Glucose Syrup S 461.docx",
+    "Makendi Glucose Syrup S 471.docx",
+    "Makendi Liquid Glucose.docx",
+    "Sorbitol Powder.docx",
+  ],
+  "oils-fats": ["Pure Butter Ghee.docx"],
+  gluten: ["Vital Wheat Gluten.docx"],
+  cocoa: [
+    "Alkalized Medium Brown Cocoa Powder LB1.docx",
+    "Alkalized Redish Dark Brown Cocoa Powder RB1.docx",
+    "Alkalized Very Dark Brown Cocoa Powder DP1.docx",
+    "Natural Cocoa Powder NP1.docx",
+  ],
+  coconut: [
+    "DESICCATED COCONUT – FINE GRADE.docx",
+    "DESICCATED COCONUT – MEDIUM GRADE.docx",
+    "DESICCATED COCONUT – Reduced Fat Medium.docx",
+    "Desiccated Coconut – Reduced Fat Fine.docx",
+  ],
+  flours: [
+    "Extra Rice Flour SP 02.docx",
+    "Rice Flour SP 01.docx",
+  ],
+  coffee: [
+    "Makendi Agglomerated Instant Coffee AG C1.docx",
+    "Makendi Freeze Dried Coffee Extract 6413.docx",
+    "Makendi Spray Dried Coffee Powder 09013.docx",
+  ],
+  creamers: [
+    "Non-Dairy Creamer  35PNDC Extra.docx",
+    "Non-Dairy Creamer 26PNDC Extra.docx",
+    "Non-Dairy Creamer 26PNDC.docx",
+    "Non-Dairy Creamer 30PNDC Extra.docx",
+    "Non-Dairy Creamer 30PNDC.docx",
+    "Non-Dairy Creamer 32PNDC Extra.docx",
+    "Non-Dairy Creamer 32PNDC.docx",
+    "Non-Dairy Creamer 35PNDC.docx",
+  ],
+};
+
+export function categorySpecificationDocuments(categorySlug) {
+  return sourceFilesByCategory[categorySlug] || [];
+}
