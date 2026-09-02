@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { access } from "node:fs/promises";
+import { resolve } from "node:path";
 import {
   catalogProducts,
   categories,
@@ -8,7 +9,9 @@ import {
   documentedTouchpoints,
   findCatalogProduct,
   slugifyProduct,
+  originCountries,
 } from "../src/data/siteData.js";
+import { productSpecification, specificationDocumentUrl } from "../src/data/productExperience.js";
 
 assert.equal(categories.length, 12, "The catalog must contain 12 ingredient families");
 assert.equal(
@@ -68,6 +71,27 @@ for (const point of documentedTouchpoints) {
   assert.equal(point.pin.length, 2);
 }
 
+assert.equal(originCountries.length, 16, "The origin atlas must include every supplied country reference");
+assert.equal(new Set(originCountries.map((country) => country.iso)).size, originCountries.length);
+for (const country of originCountries) {
+  assert.ok(country.name.en && country.name.tr, `${country.iso} needs EN/TR origin names`);
+  assert.equal(country.pin.length, 2, `${country.iso} needs an atlas map position`);
+  assert.ok(country.products.length > 0, `${country.iso} needs a portfolio pairing`);
+  await access(new URL(`../public/flags/${country.iso}.svg`, import.meta.url));
+  for (const product of country.products) {
+    assert.match(product.to, /^\/products\//, `${country.iso} origin item needs a product route`);
+  }
+}
+
+for (const product of catalogProducts) {
+  const specification = productSpecification(product.categorySlug, product.slug);
+  if (specification) {
+    const staticUrl = specificationDocumentUrl(specification.source);
+    assert.match(staticUrl, /^\/specifications\/source\//);
+    await access(resolve("public/specifications/source", specification.source));
+  }
+}
+
 assert.equal(companyContact.email, "info@makendi.com");
 assert.equal(companyContact.phoneHref, "+902163407028");
 
@@ -79,6 +103,4 @@ for (const file of [
   await access(new URL(`../public/documents/${file}`, import.meta.url));
 }
 
-console.log(
-  `Content verified: ${categories.length} families, ${catalogProducts.length} product profiles, ${destinationCountries.length} flags, ${documentedTouchpoints.length} documented touchpoints and 3 archived PDFs.`,
-);
+console.log(`Content verified: ${categories.length} families, ${catalogProducts.length} product profiles, ${originCountries.length} supplied origins, ${destinationCountries.length} inquiry countries and ${documentedTouchpoints.length} archived touchpoints.`);

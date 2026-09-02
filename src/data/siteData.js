@@ -195,6 +195,46 @@ export function findCatalogProduct(categorySlug, productSlug) {
   );
 }
 
+// Country / portfolio pairings are the editorial origin references supplied in
+// “Makendi Worldwide changes Basem”. They describe the requested atlas, not a
+// blanket availability, certification, or traceability claim for every lot.
+export const originCountries = [
+  ["tr", "Türkiye", "Türkiye", "europe", [58, 41], [["Corn starch", "Mısır nişastası", "/products/starches/corn-starch"], ["Sweeteners", "Tatlandırıcılar", "/products/sweeteners"]]],
+  ["eg", "Egypt", "Mısır", "mena", [55, 46], [["Rice starch", "Pirinç nişastası", "/products/starches/rice-starch"]]],
+  ["ru", "Russia", "Rusya", "europe", [62, 30], [["Wheat starch", "Buğday nişastası", "/products/starches/wheat-starch"]]],
+  ["th", "Thailand", "Tayland", "asia", [73, 53], [["Tapioca starch", "Tapyoka nişastası", "/products/starches/tapioca-starch"]]],
+  ["nl", "Netherlands", "Hollanda", "europe", [50, 35], [["Dairy products", "Süt ürünleri", "/products/dairy"]]],
+  ["in", "India", "Hindistan", "asia", [68, 48], [["Soy products", "Soya ürünleri", "/products/soy"]]],
+  ["id", "Indonesia", "Endonezya", "asia", [76, 59], [["Oils & fats", "Yağlar", "/products/oils-fats"]]],
+  ["gh", "Ghana", "Gana", "africa", [47, 52], [["Cocoa products", "Kakao ürünleri", "/products/cocoa"]]],
+  ["my", "Malaysia", "Malezya", "asia", [76, 57], [["Gelatin", "Jelatin", "/products/gelatin"]]],
+  ["lk", "Sri Lanka", "Sri Lanka", "asia", [68, 56], [["Coconut products", "Hindistan cevizi ürünleri", "/products/coconut"]]],
+  ["co", "Colombia", "Kolombiya", "americas", [27, 54], [["Coffee beans", "Kahve çekirdekleri", "/products/coffee/coffee-beans"]]],
+  ["it", "Italy", "İtalya", "europe", [52, 39], [["Creamers", "Kremalar", "/products/creamers"]]],
+  ["vn", "Vietnam", "Vietnam", "asia", [74, 50], [["Spray dried coffee", "Sprey kurutulmuş kahve", "/products/coffee/spray-dried-instant-coffee"]]],
+  ["au", "Australia", "Avustralya", "asia", [82, 71], [["Pure butter ghee", "Saf tereyağı ghee", "/products/oils-fats/vegetable-ghee"]]],
+  ["pl", "Poland", "Polonya", "europe", [54, 34], [["Whey powder", "Peynir altı suyu tozu", "/products/dairy/demineralized-whey-powder"]]],
+  ["cn", "China", "Çin", "asia", [70, 40], [["Sorbitol", "Sorbitol", "/products/sweeteners/sorbitol-liquid"]]],
+].map(([iso, en, tr, region, pin, products]) => ({
+  iso,
+  name: { en, tr },
+  region,
+  pin,
+  products: products.map(([productEn, productTr, to]) => ({
+    name: { en: productEn, tr: productTr },
+    to,
+  })),
+}));
+
+export const originRegionLabels = {
+  all: { en: "All origins", tr: "Tüm menşeler" },
+  europe: { en: "Europe", tr: "Avrupa" },
+  mena: { en: "MENA", tr: "MENA" },
+  africa: { en: "Africa", tr: "Afrika" },
+  americas: { en: "Americas", tr: "Amerika" },
+  asia: { en: "Asia–Pacific", tr: "Asya–Pasifik" },
+};
+
 export const destinationCountries = [
   ["tr", "Türkiye", "Türkiye", "europe"],
   ["de", "Germany", "Almanya", "europe"],

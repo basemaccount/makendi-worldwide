@@ -82,9 +82,9 @@ await reduced.goto(base, { waitUntil: "networkidle" });
 await reduced.getByRole("button", { name: "Open menu" }).click();
 await reduced
   .locator("#mobile-navigation")
-  .getByRole("link", { name: "Destinations" })
+  .locator('a[href="/products"]')
   .click();
-assert.equal(new URL(reduced.url()).pathname, "/network");
+assert.equal(new URL(reduced.url()).pathname, "/products");
 assert.equal(
   await reduced.locator("html").evaluate((node) =>
     node.classList.contains("is-transitioning"),

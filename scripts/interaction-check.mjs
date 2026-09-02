@@ -62,6 +62,7 @@ await slowSearchContext.close();
 console.log("Interaction progress: slow first search activation and repeated no-reload lifecycle checked.");
 
 const desktop = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+desktop.setDefaultTimeout(8_000);
 const errors = [];
 desktop.on("pageerror", (error) => errors.push(error.message));
 desktop.on("console", (message) => {
@@ -160,14 +161,14 @@ await desktop.getByRole("button", { name: "EN" }).click();
 
 await desktop.goto(`${base}/network`, { waitUntil: "networkidle" });
 await desktop.getByRole("button", { name: "Europe" }).click();
-await desktop.getByRole("button", { name: "Germany" }).click();
+await desktop.locator(".destination-chip").filter({ hasText: "Türkiye" }).click();
 await clickAndWaitForPath(
   desktop,
-  desktop.getByRole("link", { name: "Add to inquiry" }),
+  desktop.getByRole("link", { name: "Ask about this origin" }),
   "/contact",
 );
 assert.equal(new URL(desktop.url()).pathname, "/contact");
-assert.equal(await desktop.locator('select[name="destination"]').inputValue(), "de");
+assert.equal(await desktop.locator('select[name="destination"]').inputValue(), "tr");
 
 await desktop.locator('button[type="submit"]').click();
 assert.ok(await desktop.locator(".form-message--error").isVisible());
@@ -180,15 +181,16 @@ await desktop.getByRole("button", { name: "Close gallery" }).click();
 assert.equal(await desktop.locator(".gallery-dialog").evaluate((dialog) => dialog.open), false);
 
 const mobile = await browser.newPage({ viewport: { width: 390, height: 844 } });
+mobile.setDefaultTimeout(8_000);
 await mobile.goto(base, { waitUntil: "networkidle" });
 await mobile.getByRole("button", { name: "Open menu" }).click();
 assert.equal(await mobile.getByRole("button", { name: "Close menu" }).getAttribute("aria-expanded"), "true");
 await clickAndWaitForPath(
   mobile,
-  mobile.getByRole("link", { name: "Destinations" }),
-  "/network",
+  mobile.locator('#mobile-navigation a[href="/products"]'),
+  "/products",
 );
-assert.equal(new URL(mobile.url()).pathname, "/network");
+assert.equal(new URL(mobile.url()).pathname, "/products");
 assert.equal(await mobile.getByRole("button", { name: "Open menu" }).getAttribute("aria-expanded"), "false");
 
 await browser.close();

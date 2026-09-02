@@ -48,15 +48,24 @@ import {
   findCatalogProduct,
   localized,
 } from "./data/siteData.js";
+import {
+  productSpecification,
+  productVisual,
+  specificationDocumentUrl,
+} from "./data/productExperience.js";
 
 const copy = {
   en: {
     nav: {
+      home: "Home",
       products: "Ingredients",
       solutions: "How we work",
       network: "Destinations",
       company: "Company",
       quality: "Quality",
+      about: "About",
+      quotation: "Quotation",
+      contactLink: "Contact",
       contact: "Start an inquiry",
     },
     common: {
@@ -181,16 +190,15 @@ const copy = {
         "Routing and document questions are connected to the intended market rather than treated as an afterthought.",
     },
     network: {
-      eyebrow: "Country & destination desk",
-      title: "Put the market into the brief.",
+      eyebrow: "Country & origin atlas",
+      title: "Put the product’s place into the brief.",
       intro:
-        "Real flags, a responsive map and destination filters make the global conversation tangible. The distinction between documented touchpoints and selectable destinations remains explicit.",
+        "Real flags, an interactive map and origin filters make the portfolio easier to navigate. Every country-to-product relationship is presented as the site’s supplied portfolio reference and confirmed for each enquiry.",
       noteTitle: "How to read this atlas",
-      noteA: "Map markers",
-      noteAText: "Locations found in Makendi’s current public company or event information.",
-      noteB: "Country flags",
-      noteBText:
-        "Markets that a visitor can select when preparing an inquiry; availability and routing are not pre-confirmed.",
+      noteA: "Country markers",
+      noteAText: "The supplied country / ingredient pairing for this portfolio, shown as an easy route to the relevant product profile.",
+      noteB: "Technical sheets",
+      noteBText: "Where a source document has been supplied, the linked profile provides a readable summary and the original DOCX download.",
     },
     company: {
       eyebrow: "Company",
@@ -322,11 +330,15 @@ const copy = {
   },
   tr: {
     nav: {
+      home: "Ana sayfa",
       products: "Ürünler",
       solutions: "Çalışma modelimiz",
       network: "Destinasyonlar",
       company: "Şirket",
       quality: "Kalite",
+      about: "Hakkımızda",
+      quotation: "Teklif",
+      contactLink: "İletişim",
       contact: "Talep oluştur",
     },
     common: {
@@ -450,17 +462,15 @@ const copy = {
         "Rota ve belge soruları sonradan eklenmek yerine, hedef pazarla baştan ilişkilendirilir.",
     },
     network: {
-      eyebrow: "Ülke ve destinasyon masası",
-      title: "Pazarı talebin bir parçası yapın.",
+      eyebrow: "Ülke ve menşe atlası",
+      title: "Ürünün yerini talebin bir parçası yapın.",
       intro:
-        "Gerçek bayraklar, duyarlı harita ve destinasyon filtreleri küresel görüşmeyi somutlaştırır. Belgelenmiş temas noktalarıyla seçilebilir destinasyonlar arasındaki fark açıkça korunur.",
+        "Gerçek bayraklar, etkileşimli harita ve menşe filtreleri portföyü daha kolay gezilebilir hale getirir. Her ülke-ürün ilişkisi bu site için sağlanan portföy referansı olarak sunulur ve her talep için teyit edilir.",
       noteTitle: "Bu atlas nasıl okunmalı?",
-      noteA: "Harita işaretleri",
-      noteAText:
-        "Makendi’nin mevcut kamuya açık şirket veya etkinlik bilgilerinde yer alan konumlardır.",
-      noteB: "Ülke bayrakları",
-      noteBText:
-        "Ziyaretçinin talep hazırlarken seçebileceği pazarlardır; uygunluk ve rota önceden teyit edilmiş değildir.",
+      noteA: "Ülke işaretleri",
+      noteAText: "Bu portföy için sağlanan ülke / bileşen eşleştirmesi, ilgili ürün profiline kolay bir geçiş olarak gösterilir.",
+      noteB: "Teknik föyler",
+      noteBText: "Kaynak doküman sağlanmışsa, ilgili profil okunabilir bir özet ve orijinal DOCX indirme seçeneği sunar.",
     },
     company: {
       eyebrow: "Şirket",
@@ -662,6 +672,84 @@ function ResponsiveImage({ name, alt, sizes, className = "", priority = false })
   );
 }
 
+function ProductVisual({ category, product, language, className = "", priority = false }) {
+  const image = productVisual(category.slug, product?.slug);
+  const productName = product ? localized(product.name, language) : localized(category.name, language);
+  return (
+    <img
+      className={className}
+      src={image}
+      alt={language === "tr" ? `${productName} için Makendi portföy görseli` : `Makendi portfolio visual for ${productName}`}
+      width="1200"
+      height="900"
+      loading={priority ? "eager" : "lazy"}
+      fetchPriority={priority ? "high" : "auto"}
+      decoding="async"
+    />
+  );
+}
+
+function SpecificationSheet({ category, product, language }) {
+  const specification = productSpecification(category.slug, product.slug);
+  const text = language === "tr"
+    ? {
+        eyebrow: "Teknik föy",
+        title: "Kaynak teknik referans",
+        intro: "Aşağıdaki değerler, sağlanan kaynak dokümanın hızlı okuma özeti niteliğindedir. Güncel spesifikasyon, uygunluk ve parti bilgileri talep sırasında teyit edilir.",
+        source: "Orijinal kaynak DOCX",
+        download: "Kaynak dokümanı indir",
+        unavailable: "Bu ürün için kaynak teknik föy henüz yayınlanmadı.",
+        unavailableBody: "Uygulamanızı ve talep ettiğiniz teknik kriterleri paylaşın; uygun doküman mevcutsa ekip doğrulayıp iletebilir.",
+        ask: "Teknik föy iste",
+      }
+    : {
+        eyebrow: "Technical sheet",
+        title: "Source technical reference",
+        intro: "The values below are a quick-read summary of the supplied source document. The current specification, suitability and lot information are confirmed with each enquiry.",
+        source: "Original source DOCX",
+        download: "Download source document",
+        unavailable: "A source technical sheet is not yet published for this format.",
+        unavailableBody: "Share your application and required technical criteria; the team can confirm whether a suitable document is available.",
+        ask: "Request a technical sheet",
+      };
+  const inquiryUrl = `/contact?category=${category.slug}&product=${product.slug}`;
+
+  if (!specification) {
+    return (
+      <aside className="specification-sheet specification-sheet--empty reveal">
+        <p className="eyebrow eyebrow--orange">{text.eyebrow}</p>
+        <h2>{text.unavailable}</h2>
+        <p>{text.unavailableBody}</p>
+        <Link className="text-link" to={inquiryUrl}>{text.ask}<ArrowRight size={18} /></Link>
+      </aside>
+    );
+  }
+
+  const sourceUrl = specificationDocumentUrl(specification.source);
+  return (
+    <aside className="specification-sheet reveal" aria-label={text.title}>
+      <div className="specification-sheet__heading">
+        <div>
+          <p className="eyebrow eyebrow--orange">{text.eyebrow}</p>
+          <h2>{specification.title[language] || specification.title.en}</h2>
+        </div>
+        <FileText aria-hidden="true" />
+      </div>
+      <p>{text.intro}</p>
+      <dl className="specification-sheet__values">
+        {specification.highlights.map(([label, value]) => (
+          <div key={label}><dt>{label}</dt><dd>{value}</dd></div>
+        ))}
+      </dl>
+      <p className="specification-sheet__source"><span>{text.source}</span>{specification.source}</p>
+      <a className="button button--navy button--wide" href={sourceUrl} download>
+        <Download size={18} />
+        {text.download}
+      </a>
+    </aside>
+  );
+}
+
 function SectionHeading({ eyebrow, title, intro, action, align = "split" }) {
   return (
     <div className={`section-heading section-heading--${align} reveal`}>
@@ -751,11 +839,11 @@ function Header({ language, setLanguage }) {
   const menuToggleRef = useRef(null);
   const firstMobileLinkRef = useRef(null);
   const navigation = [
+    ["/", text.nav.home],
+    ["/company", text.nav.about],
     ["/products", text.nav.products],
-    ["/solutions", text.nav.solutions],
-    ["/network", text.nav.network],
-    ["/company", text.nav.company],
-    ["/quality", text.nav.quality],
+    ["/contact?intent=quotation", text.nav.quotation],
+    ["/contact", text.nav.contactLink],
   ];
   const mobileNavigation = [
     ...navigation,
@@ -1193,12 +1281,15 @@ function ProductDetailPage({ language }) {
               <h1>{localized(category.name, language)}</h1>
               <p>{localized(category.note, language)}</p>
             </div>
-            <span className="product-hero__icon" aria-hidden="true">
-              {(() => {
-                const Icon = categoryIcons[category.slug] || Sparkles;
-                return <Icon />;
-              })()}
-            </span>
+            <figure className="product-hero__media">
+              <ProductVisual category={category} language={language} priority />
+              <span className="product-hero__icon" aria-hidden="true">
+                {(() => {
+                  const Icon = categoryIcons[category.slug] || Sparkles;
+                  return <Icon />;
+                })()}
+              </span>
+            </figure>
           </div>
         </div>
       </section>
@@ -1211,6 +1302,9 @@ function ProductDetailPage({ language }) {
               {categoryProducts.map((product, index) => (
                 <li className="reveal" key={product.slug}>
                   <span>{String(index + 1).padStart(2, "0")}</span>
+                  <figure className="product-list__visual">
+                    <ProductVisual category={category} product={product} language={language} />
+                  </figure>
                   <Link
                     className="product-list__name"
                     to={`/products/${category.slug}/${product.slug}`}
@@ -1307,6 +1401,10 @@ function ProductProfilePage({ language }) {
                 </Link>
               </div>
             </div>
+            <figure className="format-hero__media">
+              <ProductVisual category={category} product={product} language={language} priority />
+              <figcaption>{profileText.published}</figcaption>
+            </figure>
             <aside className="format-record" aria-label={profileText.position}>
               <div className="format-record__top">
                 <span>{reference}</span>
@@ -1354,18 +1452,21 @@ function ProductProfilePage({ language }) {
               ))}
             </div>
           </article>
-          <aside className="accuracy-card reveal">
-            <span className="accuracy-card__icon" aria-hidden="true">
-              <ClipboardCheck />
-            </span>
-            <p className="eyebrow">{profileText.boundaryEyebrow}</p>
-            <h2>{profileText.boundaryTitle}</h2>
-            <p>{profileText.boundaryText}</p>
-            <Link className="text-link" to={inquiryUrl}>
-              {profileText.request}
-              <ArrowRight size={18} />
-            </Link>
-          </aside>
+          <div className="format-resource-stack">
+            <SpecificationSheet category={category} product={product} language={language} />
+            <aside className="accuracy-card reveal">
+              <span className="accuracy-card__icon" aria-hidden="true">
+                <ClipboardCheck />
+              </span>
+              <p className="eyebrow">{profileText.boundaryEyebrow}</p>
+              <h2>{profileText.boundaryTitle}</h2>
+              <p>{profileText.boundaryText}</p>
+              <Link className="text-link" to={inquiryUrl}>
+                {profileText.request}
+                <ArrowRight size={18} />
+              </Link>
+            </aside>
+          </div>
         </div>
       </section>
 

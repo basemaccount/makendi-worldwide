@@ -7,7 +7,12 @@ import {
   companyContact,
   destinationCountries,
   localized,
+  originCountries,
 } from "../data/siteData.js";
+
+const inquiryCountries = [...originCountries, ...destinationCountries.filter(
+  (destination) => !originCountries.some((origin) => origin.iso === destination.iso),
+)];
 
 const copy = {
   en: {
@@ -65,7 +70,7 @@ export default function InquiryForm({ language = "en" }) {
   const [searchParams] = useSearchParams();
   const initialCategory = searchParams.get("category") || "";
   const initialProduct = searchParams.get("product") || "";
-  const initialDestination = searchParams.get("destination") || "";
+  const initialDestination = searchParams.get("origin") || searchParams.get("destination") || "";
   const validInitialCategory = categories.some(
     (category) => category.slug === initialCategory,
   )
@@ -86,7 +91,7 @@ export default function InquiryForm({ language = "en" }) {
     phone: "",
     category: validInitialCategory,
     product: validInitialProduct,
-    destination: destinationCountries.some((country) => country.iso === initialDestination)
+    destination: inquiryCountries.some((country) => country.iso === initialDestination)
       ? initialDestination
       : "",
     details: "",
@@ -119,7 +124,7 @@ export default function InquiryForm({ language = "en" }) {
   const destinationName = useMemo(
     () =>
       localized(
-        destinationCountries.find((item) => item.iso === values.destination)?.name,
+        inquiryCountries.find((item) => item.iso === values.destination)?.name,
         language,
       ),
     [language, values.destination],
@@ -307,7 +312,7 @@ export default function InquiryForm({ language = "en" }) {
               required
             >
               <option value="">{text.selectDestination}</option>
-              {destinationCountries.map((country) => (
+              {inquiryCountries.map((country) => (
                 <option value={country.iso} key={country.iso}>
                   {localized(country.name, language)}
                 </option>

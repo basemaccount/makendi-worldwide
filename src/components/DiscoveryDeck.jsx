@@ -74,7 +74,7 @@ export default function DiscoveryDeck({ language = "en", openRequest = null }) {
   }, [openRequest]);
   useEffect(() => {
     const dialog = dialogRef.current; if (!dialog) return;
-    if (open && !dialog.open) { dialog.showModal(); document.body.classList.add("discovery-open"); requestAnimationFrame(() => inputRef.current?.focus()); }
+    if (open && !dialog.open) { dialog.showModal(); document.body.classList.add("discovery-open"); inputRef.current?.focus(); requestAnimationFrame(() => inputRef.current?.focus()); }
     else if (!open && dialog.open) dialog.close();
     if (!open) document.body.classList.remove("discovery-open");
   }, [open]);

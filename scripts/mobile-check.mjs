@@ -132,8 +132,8 @@ await interactionPage.waitForTimeout(450);
 assert.equal(await interactionPage.locator(".mobile-menu nav a").count(), 7);
 assert.equal(
   await interactionPage.evaluate(() => document.activeElement?.textContent?.trim()),
-  "01Ingredients",
-  "Opening the mobile menu did not focus its first destination",
+  "01Home",
+  "Opening the mobile menu did not focus its first primary link",
 );
 const menuLayout = await interactionPage.locator(".mobile-menu").evaluate((element) => {
   const rect = element.getBoundingClientRect();
@@ -162,7 +162,7 @@ const destinationColumns = await interactionPage.locator(".destination-grid").ev
 ));
 assert.equal(destinationColumns, 2, "The 320px destination directory did not retain its compact two-column layout");
 const atlasTargets = await interactionPage
-  .locator(".atlas__pin, .filter-row button, .search-field")
+  .locator(".filter-row button, .search-field, .destination-chip")
   .evaluateAll((elements) =>
     elements.map((element) => {
       const rect = element.getBoundingClientRect();
@@ -176,8 +176,8 @@ for (const target of atlasTargets) {
   );
 }
 await interactionPage.getByRole("button", { name: "Europe" }).click();
-await interactionPage.getByRole("button", { name: "United Kingdom" }).click();
-assert.ok(await interactionPage.getByRole("button", { name: "Clear selection" }).isVisible());
+await interactionPage.locator(".destination-chip").filter({ hasText: "Türkiye" }).click();
+assert.ok(await interactionPage.locator(".origin-card").isVisible());
 
 await interactionPage.goto(`${base}/archive`, { waitUntil: "networkidle" });
 await interactionPage.locator(".archive-tile").first().click();
