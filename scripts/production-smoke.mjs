@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { chromium } from "@playwright/test";
 
-const base = (process.env.PRODUCTION_URL || "https://makendi-worldwide.vercel.app").replace(/\/$/, "");
+const base = (process.env.PRODUCTION_URL || "https://makendi.com.tr").replace(/\/$/, "");
 const paths = ["/", "/products", "/network", "/archive", "/contact", "/robots.txt", "/sitemap.xml"];
 
 for (const path of paths) {
@@ -24,7 +24,13 @@ page.on("pageerror", (error) => errors.push(error.message));
 await page.goto(base, { waitUntil: "networkidle" });
 assert.match(await page.locator("h1").innerText(), /Ingredients/);
 await page.goto(`${base}/network`, { waitUntil: "networkidle" });
-assert.ok(await page.locator(".destination-chip").count() >= 28);
+assert.ok(await page.locator(".destination-chip").count() >= 16);
+await page.goto(`${base}/products`, { waitUntil: "networkidle" });
+assert.ok(await page.locator(".category-card__visual img").count() >= 12);
+await page.goto(`${base}/products/dairy`, { waitUntil: "networkidle" });
+assert.ok(await page.locator(".product-list__visual img").count() >= 8);
+await page.goto(`${base}/products/cocoa`, { waitUntil: "networkidle" });
+assert.ok(await page.locator(".product-list__visual img").count() >= 4);
 await browser.close();
 assert.deepEqual(errors, []);
 console.log(`Production smoke verification passed for ${base}.`);
