@@ -38,6 +38,7 @@ import {
 } from "./router.jsx";
 import ArchiveGallery from "./components/ArchiveGallery.jsx";
 import ExperienceLayer from "./components/ExperienceLayer.jsx";
+import GroupEcosystemBar from "./components/GroupEcosystemBar.jsx";
 import InquiryForm from "./components/InquiryForm.jsx";
 import WorldAtlas from "./components/WorldAtlas.jsx";
 import {
@@ -2185,6 +2186,9 @@ function Footer({ language }) {
           <Link to="/privacy">{text.footer.privacy}</Link>
           <span>{localized(companyContact.address, language)}</span>
         </div>
+      </div>
+      <div className="container">
+        <GroupEcosystemBar language={language} currentId="worldwide" />
       </div>
       <div className="container site-footer__bottom">
         <p>© {new Date().getFullYear()} {text.footer.rights}</p>

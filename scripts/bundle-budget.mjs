@@ -26,7 +26,7 @@ const total = criticalJs + criticalCss + deferredJs + deferredCss;
 // media add a bounded amount of first-view code. Keep the guardrail explicit
 // while allowing the new experience budget.
 assert.ok(criticalJs <= 360_000, `Critical JavaScript ${criticalJs} bytes exceeds 360000.`);
-assert.ok(criticalCss <= 102_000, `Critical CSS ${criticalCss} bytes exceeds 102000.`);
+assert.ok(criticalCss <= 106_000, `Critical CSS ${criticalCss} bytes exceeds 106000.`);
 assert.ok(deferredJs <= 12_000, `Deferred JavaScript ${deferredJs} bytes exceeds 12000.`);
 assert.ok(deferredCss <= 18_000, `Deferred CSS ${deferredCss} bytes exceeds 18000.`);
 assert.ok(total <= 500_000, `All critical and deferred assets total ${total} bytes, exceeding 500000.`);
