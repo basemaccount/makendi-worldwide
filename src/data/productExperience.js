@@ -1,33 +1,27 @@
 const visualByCategory = {
-  starches: "/images/archive/gallery-corn-starch.webp",
-  dairy: "/images/ingredients-hero.webp",
-  sweeteners: "/images/archive/gallery-dextrose.webp",
-  soy: "/images/archive/gallery-production-01.webp",
-  "oils-fats": "/images/archive/gallery-production-02.webp",
-  gluten: "/images/archive/gallery-production-03.webp",
-  cocoa: "/images/archive/gallery-cocoa-pallet.webp",
-  gelatin: "/images/archive/gallery-f42.webp",
-  coconut: "/images/archive/gallery-trade-01.webp",
-  flours: "/images/archive/gallery-corn-starch.webp",
-  coffee: "/images/archive/gallery-spray-coffee.webp",
-  creamers: "/images/archive/gallery-creamer.webp",
+  starches: "/images/families/starches.webp",
+  dairy: "/images/families/dairy.webp",
+  sweeteners: "/images/families/sweeteners.webp",
+  soy: "/images/families/soy.webp",
+  "oils-fats": "/images/families/oils-fats.webp",
+  gluten: "/images/families/gluten.webp",
+  cocoa: "/images/families/cocoa.webp",
+  gelatin: "/images/families/gelatin.webp",
+  coconut: "/images/families/coconut.webp",
+  flours: "/images/families/flours.webp",
+  coffee: "/images/families/coffee.webp",
+  creamers: "/images/families/creamers.webp",
 };
 
-const visualByProduct = {
-  "coffee/spray-dried-instant-coffee": "/images/archive/gallery-spray-coffee.webp",
-  "coffee/agglomerated-coffee": "/images/archive/gallery-product-01.webp",
-  "coffee/freeze-dried-coffee": "/images/archive/gallery-product-01.webp",
-  "creamers/non-dairy-creamers": "/images/archive/gallery-creamer.webp",
-  "sweeteners/dextrose-monohydrate": "/images/archive/gallery-dextrose.webp",
-  "cocoa/cocoa-powder": "/images/archive/gallery-cocoa-pallet.webp",
-};
+export function categoryCardVisual(categorySlug) {
+  return `/images/families/${categorySlug}-card.webp`;
+}
 
 export function productVisual(categorySlug, productSlug) {
-  return (
-    visualByProduct[`${categorySlug}/${productSlug}`] ||
-    visualByCategory[categorySlug] ||
-    "/images/ingredients-hero.webp"
-  );
+  if (productSlug) {
+    return `/images/products/${productSlug}.webp`;
+  }
+  return visualByCategory[categorySlug] || "/images/ingredients-hero.webp";
 }
 
 export function specificationDocumentUrl(filename) {

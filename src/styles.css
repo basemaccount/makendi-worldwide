@@ -930,6 +930,15 @@ p {
 .category-card--featured .category-card__icon,
 .category-card--featured .circle-arrow {
   border-color: rgb(255 255 255 / 0.18);
+  background: rgb(7 26 53 / 0.86);
+  color: var(--white);
+}
+
+.category-card__top,
+.category-card__body,
+.category-card__meta {
+  position: relative;
+  z-index: 1;
 }
 
 .category-card__top,
@@ -953,6 +962,7 @@ p {
   place-items: center;
   border: 1px solid rgb(7 26 53 / 0.12);
   border-radius: 50%;
+  background: rgb(255 255 255 / 0.72);
 }
 
 .category-card__body h3 {
@@ -964,16 +974,56 @@ p {
 }
 
 .category-card__body p {
-  max-width: 440px;
+  max-width: 60%;
   margin-bottom: 0;
   color: var(--slate);
   font-size: 0.88rem;
+}
+
+.category-card__visual {
+  position: absolute;
+  z-index: 0;
+  right: 0;
+  bottom: 0;
+  width: 54%;
+  height: 58%;
+  margin: 0;
+  overflow: hidden;
+  border-top-left-radius: 84px;
+  pointer-events: none;
+  mask-image: radial-gradient(112% 112% at 96% 96%, #000 58%, transparent 88%);
+}
+
+.category-card--featured .category-card__visual {
+  right: 14px;
+  bottom: 14px;
+  width: 44%;
+  height: 64%;
+  border: 1px solid rgb(255 255 255 / 0.16);
+  border-radius: 18px;
+  mask-image: none;
+}
+
+.category-card__visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: right bottom;
+  transition: transform 320ms ease;
+}
+
+.category-card:hover .category-card__visual img {
+  transform: scale(1.05);
 }
 
 .category-card__meta {
   color: #5c6571;
   font-size: 0.68rem;
   font-weight: 800;
+}
+
+.category-card .circle-arrow {
+  background: rgb(255 255 255 / 0.92);
 }
 
 /* Home feature sections */
@@ -1246,6 +1296,31 @@ p {
   border-radius: 50%;
 }
 
+.page-hero--portfolio .page-hero__inner {
+  grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.85fr);
+  gap: clamp(28px, 4.5vw, 56px);
+}
+
+.page-hero__visual--portfolio {
+  width: min(44vw, 540px);
+  aspect-ratio: 792 / 660;
+  border: 0;
+  border-radius: 28px;
+  background: transparent;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.page-hero__portfolio-media,
+.page-hero__portfolio-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 28px;
+  object-fit: cover;
+  mask-image: radial-gradient(96% 96% at 54% 50%, #000 72%, transparent 100%);
+}
+
 .page-hero--process {
   --hero-glow: rgb(241 149 34 / 0.16);
 }
@@ -1442,21 +1517,21 @@ p {
 
 .product-hero__media {
   position: relative;
-  width: clamp(190px, 22vw, 300px);
-  aspect-ratio: 1.08;
+  width: clamp(220px, 26vw, 370px);
+  aspect-ratio: 1.32;
   flex: 0 0 auto;
   margin: 0;
   overflow: hidden;
   border: 1px solid rgb(7 26 53 / 0.13);
-  border-radius: 28px;
-  background: rgb(255 255 255 / 0.48);
+  border-radius: 26px;
+  background: rgb(255 255 255 / 0.65);
   box-shadow: 0 28px 60px rgb(7 26 53 / 0.13);
 }
 
 .product-hero__media::after {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, transparent 42%, rgb(7 26 53 / 0.2));
+  background: linear-gradient(135deg, transparent 62%, rgb(7 26 53 / 0.08));
   content: "";
   pointer-events: none;
 }
@@ -1465,7 +1540,7 @@ p {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scale(1.04);
+  transform: scale(1.02);
 }
 
 .product-hero--blue .product-hero__media > img {
@@ -1527,10 +1602,10 @@ p {
 
 .product-list li {
   display: grid;
-  min-height: 82px;
-  grid-template-columns: 42px 62px 1fr 48px;
+  min-height: 92px;
+  grid-template-columns: 42px 86px 1fr 48px;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
   border-bottom: 1px solid rgb(7 26 53 / 0.12);
 }
 
@@ -1541,8 +1616,8 @@ p {
 }
 
 .product-list__visual {
-  width: 52px;
-  height: 52px;
+  width: 78px;
+  height: 66px;
   margin: 0;
   overflow: hidden;
   border: 1px solid rgb(7 26 53 / 0.1);
@@ -3693,18 +3768,6 @@ p {
     width: 100%;
     max-width: 430px;
     aspect-ratio: 1.7;
-  }
-
-  .product-list li {
-    min-height: 72px;
-    grid-template-columns: 28px 48px minmax(0, 1fr) 44px;
-    gap: 8px;
-  }
-
-  .product-list__visual {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
   }
 
   .product-list li strong {

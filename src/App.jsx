@@ -49,6 +49,7 @@ import {
   localized,
 } from "./data/siteData.js";
 import {
+  categoryCardVisual,
   categorySpecificationDocuments,
   productSpecification,
   productVisual,
@@ -838,6 +839,16 @@ function CategoryCard({ category, language, featured = false }) {
         <h3>{localized(category.name, language)}</h3>
         <p>{localized(category.note, language)}</p>
       </div>
+      <figure className="category-card__visual" aria-hidden="true">
+        <img
+          src={categoryCardVisual(category.slug)}
+          alt=""
+          width="420"
+          height="334"
+          loading="lazy"
+          decoding="async"
+        />
+      </figure>
       <div className="category-card__meta">
         <span>
           {category.products.length} {text.common.products}
@@ -870,13 +881,34 @@ function PageHero({
           <p className="page-hero__intro">{intro}</p>
           {children}
         </div>
-        <div className="page-hero__visual" aria-hidden="true">
-          <span className="page-hero__index">{index}</span>
-          <span className="page-hero__icon">
-            <Icon />
-          </span>
-          <span className="page-hero__orbit" />
-        </div>
+        {variant === "portfolio" ? (
+          <div className="page-hero__visual page-hero__visual--portfolio" aria-hidden="true">
+            <picture className="page-hero__portfolio-media">
+              <source
+                type="image/webp"
+                srcSet="/images/portfolio-hero-560.webp 560w, /images/portfolio-hero.webp 900w"
+                sizes="(max-width: 900px) 92vw, 44vw"
+              />
+              <img
+                src="/images/portfolio-hero.webp"
+                alt=""
+                width="792"
+                height="660"
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+              />
+            </picture>
+          </div>
+        ) : (
+          <div className="page-hero__visual" aria-hidden="true">
+            <span className="page-hero__index">{index}</span>
+            <span className="page-hero__icon">
+              <Icon />
+            </span>
+            <span className="page-hero__orbit" />
+          </div>
+        )}
       </div>
     </section>
   );

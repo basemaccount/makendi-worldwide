@@ -12,8 +12,10 @@ import {
   originCountries,
 } from "../src/data/siteData.js";
 import {
+  categoryCardVisual,
   categorySpecificationDocuments,
   productSpecification,
+  productVisual,
   specificationDocumentUrl,
 } from "../src/data/productExperience.js";
 
@@ -40,11 +42,16 @@ for (const category of categories) {
   assert.ok(category.name.en && category.name.tr, `${category.slug} needs EN/TR names`);
   assert.ok(category.note.en && category.note.tr, `${category.slug} needs EN/TR context`);
   assert.ok(category.products.length > 0, `${category.slug} cannot be empty`);
+  await access(resolve("public", productVisual(category.slug).replace(/^\//, "")));
+  await access(resolve("public", categoryCardVisual(category.slug).replace(/^\//, "")));
   for (const product of category.products) {
     assert.equal(product.length, 2, `${category.slug} product needs EN/TR labels`);
     assert.ok(product[0] && product[1]);
   }
 }
+
+await access(resolve("public/images/portfolio-hero.webp"));
+await access(resolve("public/images/portfolio-hero-560.webp"));
 
 for (const product of catalogProducts) {
   assert.match(product.slug, /^[a-z0-9-]+$/);
@@ -57,6 +64,7 @@ for (const product of catalogProducts) {
     findCatalogProduct(product.categorySlug, product.slug),
     product,
   );
+  await access(resolve("public", productVisual(product.categorySlug, product.slug).replace(/^\//, "")));
 }
 
 const suppliedDocuments = new Set();

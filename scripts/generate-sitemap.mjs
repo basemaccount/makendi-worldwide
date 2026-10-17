@@ -5,7 +5,7 @@ import {
 } from "../src/data/siteData.js";
 
 const origin =
-  process.env.SITE_ORIGIN || "https://makendi-worldwide.vercel.app";
+  process.env.SITE_ORIGIN || "https://makendi.com.tr";
 const staticRoutes = [
   "/",
   "/products",
